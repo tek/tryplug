@@ -28,7 +28,8 @@ object Versions
     }
   }
 
-  def update(grp: String, pkg: String, handle: String, current: String) = {
+  def update(grp: String, pkg: String, handle: String, current: String)
+  (implicit log: Logger) = {
     info(grp, pkg)
       .map(_.decodeOption[PackageInfo])
       .andThen {
@@ -36,7 +37,7 @@ object Versions
           writeVersion(handle, v)
       }
       .onFailure {
-        case e ⇒ println(e)
+        case e ⇒ log.error(s"failed to fetch version for $pkg: $e")
       }
   }
 
@@ -44,13 +45,12 @@ object Versions
     sys.env.get("HOME")
       .map(d ⇒ new File(d) / ".sbt" / "0.13" / "plugins")
 
-  def writeVersion(handle: String, version: String) = {
+  def writeVersion(handle: String, version: String)(implicit log: Logger) = {
       versionDir map { dir ⇒
         val v = s"${handle}Version"
-        val content = s"""$v in Global := "$version"
-        """
+        val content = s"""$v in Global := "$version""""
         val f = dir / s"$v.sbt"
-        println(s"updating version for '$handle' to $version")
+        log.warn(s"updating version for '$handle' to $version")
         IO.write(f, content)
       }
   }

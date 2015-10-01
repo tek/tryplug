@@ -25,6 +25,7 @@ extends Build
       "-language:existentials",
       "-language:higherKinds"
     ),
-    libraryDependencies += "io.argonaut" %% "argonaut" % "+"
+    libraryDependencies += "io.argonaut" %% "argonaut" % "+",
+    addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
   )
 }

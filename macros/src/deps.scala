@@ -31,6 +31,9 @@ class PluginTrypId(plainId: DepSpec, path: String, sub: Seq[String],
 extends TrypId(plainId, path, sub, dev)
 {
   def aRefs = super.projects
+
+  override def development =
+    super.development && sys.env.contains("TRYP_DEBUG")
 }
 
 object TrypId

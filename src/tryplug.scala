@@ -33,22 +33,32 @@ trait Tryplug
 
   def trypPath = Env.localProject("sbt-tryp")
 
-  def userProject = {
-    val userLevel = project in file(".")
-    Env.trypDebug map { _ ⇒
-      userLevel dependsOn(ProjectRef(trypPath, androidName))
-    } getOrElse {
-      userLevel settings(
-        // setting the resolver like this causes buggy duplication errors
-        // invalidating publishTo circumvents those
+  def userProject(name: String) = {
+    pluginSubProject(name).in(file("."))
+      .settings(
         bintrayTekResolver,
-        publishTo := None,
-        plugin(trypOrg, s"tryp-$androidName", trypVersion in Global)
+        publishTo := None
       )
-    }
   }
 
-  def deps: DepsBase = NoDeps
+  object TryplugDeps
+  extends DepsBase
+  {
+    override def deps = super.deps ++ Map(
+      "user-level" → userLevel
+    )
+
+    val huy = "com.hanhuy.sbt"
+    val sdkName = "android-sdk-plugin"
+
+    val userLevel = ids(
+      pd(huy, sdkName, sdkVersion, s"pfn/$sdkName"),
+      pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
+        androidName)
+    )
+  }
+
+  def deps: DepsBase = TryplugDeps
 
   def compilerSettings = Seq(
     scalacOptions ++= Seq(
@@ -96,8 +106,8 @@ trait Tryplug
   val scalaVersionSetting = scalaVersion := "2.11.7"
 
   def pluginVersionDefaults = List(
-    sdkVersion in Global := sys.props.getOrElse("sdk", "1.5.1"),
-    protifyVersion in Global := sys.props.getOrElse("protify", "1.1.5")
+    propVersion(sdkVersion, "sdk", "1.5.1"),
+    propVersion(protifyVersion, "protify", "1.1.4")
   )
 
   val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
@@ -110,4 +120,8 @@ trait Tryplug
   }
 
   lazy val bintrayTekResolver = bintrayPluginResolver("tek")
+
+  def propVersion(setting: SettingKey[String], name: String, alt: String) = {
+    setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
+  }
 }

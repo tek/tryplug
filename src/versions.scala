@@ -30,29 +30,35 @@ object Versions
 
   def update(grp: String, pkg: String, handle: String, current: String)
   (implicit log: Logger) = {
+    log.info(s"checking version of $handle ($current)")
     info(grp, pkg)
       .map(_.decodeOption[PackageInfo])
       .andThen {
         case util.Success(Some(PackageInfo(_, v, _))) if v > current ⇒
           writeVersion(handle, v)
+          log.warn(s"updating version for $handle: $current ⇒ $v")
       }
       .onFailure {
         case e ⇒ log.error(s"failed to fetch version for $pkg: $e")
       }
   }
 
-  val versionDir =
+  val versionDirs =
     sys.env.get("HOME")
-      .map(d ⇒ new File(d) / ".sbt" / "0.13" / "plugins")
+      .map { home ⇒
+        val plug = new File(home) / ".sbt" / "0.13" / "plugins"
+        Seq(plug, plug / "project")
+      }
+      .getOrElse(Nil)
 
   def writeVersion(handle: String, version: String)(implicit log: Logger) = {
-      versionDir map { dir ⇒
-        val v = s"${handle}Version"
-        val content = s"""$v in Global := "$version""""
-        val f = dir / s"$v.sbt"
-        log.warn(s"updating version for '$handle' to $version")
-        IO.write(f, content)
-      }
+    def write(dir: File) = {
+      val v = s"${handle}Version"
+      val content = s"""$v in Global := "$version""""
+      val f = dir / s"$v.sbt"
+      IO.write(f, content)
+    }
+    versionDirs map(write)
   }
 
   def mkUrl(grp: String, pkg: String) = {

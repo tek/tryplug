@@ -98,8 +98,8 @@ trait Tryplug
 
   def pluginSubProject(name: String) = {
     Project(name, file(name))
-      .settings(basicPluginSettings)
-      .settings(deps(name))
+      .settings(basicPluginSettings: _*)
+      .settings(deps(name): _*)
       .dependsOn(deps.refs(name): _*)
   }
 

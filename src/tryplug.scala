@@ -42,7 +42,7 @@ trait Tryplug
   }
 
   object TryplugDeps
-  extends DepsBase
+  extends Deps
   {
     override def deps = super.deps ++ Map(
       "user-level" → userLevel
@@ -58,7 +58,7 @@ trait Tryplug
     )
   }
 
-  def deps: DepsBase = TryplugDeps
+  def deps: Deps = TryplugDeps
 
   def compilerSettings = Seq(
     scalacOptions ++= Seq(

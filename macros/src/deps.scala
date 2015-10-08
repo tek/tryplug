@@ -78,7 +78,7 @@ object Deps
   }
 }
 
-trait DepsBase
+trait Deps
 {
   implicit def ModuleIDtoTrypId(id: ModuleID) =
     new TrypId(libraryDependencies += id, "", List(), false)
@@ -145,9 +145,6 @@ trait DepsBase
     "org.specs2" %% "specs2-core" % specsV
   )
 }
-
-trait Deps
-extends DepsBase
 
 object NoDeps
 extends Deps

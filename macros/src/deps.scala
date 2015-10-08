@@ -24,6 +24,8 @@ class TrypId(plainId: DepSpec, path: String, sub: Seq[String], dev: Boolean)
     if (development) projects.map(a ⇒ a: ClasspathDep[ProjectReference])
     else List()
   }
+
+  override def toString = s"TrypId($plainId, $path, $sub, $dev)"
 }
 
 class PluginTrypId(plainId: DepSpec, path: String, sub: Seq[String],

@@ -4,10 +4,13 @@ import java.io.{StringWriter, InputStreamReader, File}
 import java.nio.charset.Charset
 import java.net.URL
 
-import argonaut._, Argonaut._
-import sbt._
-
 import scala.concurrent.Future
+
+import argonaut._, Argonaut._
+
+import semverfi._
+
+import sbt._
 
 object Versions
 {
@@ -34,7 +37,8 @@ object Versions
     info(grp, pkg)
       .map(_.decodeOption[PackageInfo])
       .andThen {
-        case util.Success(Some(PackageInfo(_, v, _))) if v > current ⇒
+        case util.Success(Some(PackageInfo(_, v, _)))
+        if Version(v) > Version(current) ⇒
           writeVersion(handle, v)
           log.warn(s"updating version for $handle: $current ⇒ $v")
       }

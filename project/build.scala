@@ -28,7 +28,10 @@ extends Build
 
   lazy val root = project in file(".") settings(
     name := "tryplug",
-    libraryDependencies += "io.argonaut" %% "argonaut" % "+",
+    libraryDependencies ++= Seq(
+      "io.argonaut" %% "argonaut" % "+",
+      "me.lessis" %% "semverfi" % "+"
+    ),
     addSbtPlugin("tryp.sbt" % "tryplug-macros" % "2"),
     addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
   ) settings(common: _*) aggregate(macros)

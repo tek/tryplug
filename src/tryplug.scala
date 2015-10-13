@@ -10,10 +10,11 @@ import Types._
 
 object TrypKeys
 {
-  val trypVersion = settingKey[String]("tryp-build version")
-  val tryplugVersion = settingKey[String]("tryplug version")
-  val sdkVersion = settingKey[String]("android-sdk-plugin version")
-  val protifyVersion = settingKey[String]("protify version")
+  val Tryp = config("tryp")
+  val trypVersion = settingKey[String]("tryp-build version") in Tryp
+  val tryplugVersion = settingKey[String]("tryplug version") in Tryp
+  val sdkVersion = settingKey[String]("android-sdk-plugin version") in Tryp
+  val protifyVersion = settingKey[String]("protify version") in Tryp
 }
 
 trait Tryplug

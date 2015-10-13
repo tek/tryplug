@@ -20,7 +20,9 @@ with Tryplug
 
   override def projectSettings = super.projectSettings ++ Seq(
     name := userLevelName,
-    VersionUpdateKeys.autoUpdateVersions := true
+    VersionUpdateKeys.autoUpdateVersions := true,
+    bintrayTekResolver,
+    publishTo := None
   ) ++ basicPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 }

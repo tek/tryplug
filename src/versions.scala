@@ -100,7 +100,7 @@ extends AutoPlugin
   import autoImport._
 
   override def projectSettings = super.projectSettings ++ Seq(
-    versions := Seq(),
+    versions := Nil,
     autoUpdateVersions := false,
     projectDir := (baseDirectory in ThisBuild).value,
     updateVersions <<= updatePluginVersionsTask,

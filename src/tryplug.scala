@@ -50,9 +50,11 @@ trait Tryplug
 
     val huy = "com.hanhuy.sbt"
     val sdkName = "android-sdk-plugin"
+    val protifyName = "protify"
 
     val userLevel = ids(
       pd(huy, sdkName, sdkVersion, s"pfn/$sdkName"),
+      pd(huy, protifyName, protifyVersion, s"pfn/$protifyName"),
       pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
         androidName)
     )

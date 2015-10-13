@@ -32,9 +32,8 @@ extends Build
       "io.argonaut" %% "argonaut" % "+",
       "me.lessis" %% "semverfi" % "+"
     ),
-    addSbtPlugin("tryp.sbt" % "tryplug-macros" % "2"),
     addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
-  ) settings(common: _*) aggregate(macros)
+  ) settings(common: _*) aggregate(macros) dependsOn(macros)
 
   lazy val macros = project in file("macros") settings(
     name := "tryplug-macros",

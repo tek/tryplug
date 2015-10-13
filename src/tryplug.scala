@@ -34,14 +34,6 @@ trait Tryplug
 
   def trypPath = Env.localProject("sbt-tryp")
 
-  def userProject(name: String) = {
-    pluginSubProject(name).in(file("."))
-      .settings(
-        bintrayTekResolver,
-        publishTo := None
-      )
-  }
-
   object TryplugDeps
   extends Deps
   {
@@ -54,9 +46,10 @@ trait Tryplug
     val protifyName = "protify"
 
     val userLevel = ids(
-      pd(huy, sdkName, sdkVersion, s"pfn/$sdkName"),
-      pd(huy, protifyName, protifyVersion, s"pfn/$protifyName"),
-      pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
+      pd(huy, sdkName, sdkVersion, "pfn", s"pfn/$sdkName"),
+      pd(huy, s"android-$protifyName", protifyVersion, "pfn",
+        s"pfn/$protifyName"),
+      pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
         androidName)
     )
   }
@@ -94,16 +87,22 @@ trait Tryplug
     bintrayOrganization in bintray := None
   )
 
-  def pluginProject = {
-    val plugin = project in file(".")
-    plugin.settings(basicPluginSettings)
-  }
-
   def pluginSubProject(name: String) = {
     Project(name, file(name))
       .settings(basicPluginSettings: _*)
       .settings(deps(name): _*)
+      .settings(deps.pluginVersions(name): _*)
+      .settings(VersionUpdateKeys.autoUpdateVersions := true)
       .dependsOn(deps.refs(name): _*)
+      .enablePlugins(PluginVersionUpdate)
+  }
+
+  def pluginProject(name: String) = {
+    pluginSubProject(name).in(file("."))
+      .settings(
+        bintrayTekResolver,
+        publishTo := None
+      )
   }
 
   val scalaVersionSetting = scalaVersion := "2.11.7"
@@ -114,7 +113,6 @@ trait Tryplug
   )
 
   val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
-
 
   def bintrayPluginResolver(name: String) = {
     val u = url(s"https://dl.bintray.com/$name/sbt-plugins")
@@ -127,4 +125,7 @@ trait Tryplug
   def propVersion(setting: SettingKey[String], name: String, alt: String) = {
     setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
   }
+
+  def pspec(user: String, pkg: String, version: SettingKey[String]) =
+    macro Pspec.create
 }

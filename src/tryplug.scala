@@ -34,11 +34,13 @@ trait Tryplug
 
   def trypPath = Env.localProject("sbt-tryp")
 
+  def userLevelName = "user-level"
+
   object TryplugDeps
   extends Deps
   {
     override def deps = super.deps ++ Map(
-      "user-level" → userLevel
+      userLevelName → userLevel
     )
 
     val huy = "com.hanhuy.sbt"
@@ -94,7 +96,6 @@ trait Tryplug
       .settings(deps.pluginVersions(name): _*)
       .settings(VersionUpdateKeys.autoUpdateVersions := true)
       .dependsOn(deps.refs(name): _*)
-      .enablePlugins(PluginVersionUpdate)
   }
 
   def pluginProject(name: String) = {

@@ -22,7 +22,9 @@ with Tryplug
     name := userLevelName,
     VersionUpdateKeys.autoUpdateVersions := true,
     bintrayTekResolver,
-    publishTo := None
+    publishTo := None,
+    bintrayPluginResolver("pfn"),
+    addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
   ) ++ basicPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 }

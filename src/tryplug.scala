@@ -115,7 +115,9 @@ trait Tryplug
 
   def pluginVersionDefaults = List(
     propVersion(sdkVersion, "sdk", "1.5.1"),
-    propVersion(protifyVersion, "protify", "1.1.4")
+    propVersion(protifyVersion, "protify", "1.1.4"),
+    propVersion(trypVersion, "tryp", "28"),
+    propVersion(tryplugVersion, "tryplug", "5")
   )
 
   val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))

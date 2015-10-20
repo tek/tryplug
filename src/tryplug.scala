@@ -52,7 +52,9 @@ trait Tryplug
       pd(huy, s"android-$protifyName", protifyVersion, "pfn",
         s"pfn/$protifyName"),
       pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
-        androidName)
+        androidName),
+      pd("tryp.sbt", "tryplug", tryplugVersion, "tek", "tek/tryplug",
+        "tryplug", "macros")
     )
   }
 
@@ -108,6 +110,7 @@ trait Tryplug
 
   def userLevelDebugDeps = {
     Project(userLevelName, file("."))
+      .settings(pluginVersionDefaults: _*)
       .dependsOn(deps.refs(userLevelName): _*)
   }
 

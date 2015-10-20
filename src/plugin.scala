@@ -23,11 +23,20 @@ with Tryplug
     def debugDeps = userLevelDebugDeps
   }
 
+  def updateTryplugVersion = Def.task {
+    implicit val log = streams.value.log
+    val updater = new Versions {
+      def projectDir = Some(baseDirectory.value / "project")
+    }
+    updater.update(pspec("tek", "tryplug", TrypKeys.tryplugVersion))
+  }
+
   override def projectSettings = super.projectSettings ++ Seq(
     name := userLevelName,
     VersionUpdateKeys.autoUpdateVersions := true,
     bintrayTekResolver,
     publishTo := None,
+    update <<= update dependsOn updateTryplugVersion,
     bintrayPluginResolver("pfn"),
     addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
   ) ++ basicPluginSettings ++ deps(userLevelName) ++

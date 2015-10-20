@@ -26,7 +26,7 @@ extends Build
     )
   )
 
-  lazy val root = project in file(".") settings(
+  lazy val tryplug = project in file(".") settings(
     name := "tryplug",
     libraryDependencies ++= Seq(
       "io.argonaut" %% "argonaut" % "+",

@@ -91,7 +91,7 @@ trait Deps
   implicit def ModuleIDtoTrypId(id: ModuleID) =
     new TrypId(libraryDependencies += id, "", List(), false)
 
-  implicit class MapShortcuts[A, B](m: Map[A, _ <: Seq[B]]) {
+  implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {
     def fetch(key: A) = m.get(key).toSeq.flatten
   }
 

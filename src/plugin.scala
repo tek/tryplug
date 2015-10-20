@@ -18,6 +18,11 @@ with Tryplug
 {
   override def requires = PluginVersionUpdate
 
+  object autoImport
+  {
+    def debugDeps = userLevelDebugDeps
+  }
+
   override def projectSettings = super.projectSettings ++ Seq(
     name := userLevelName,
     VersionUpdateKeys.autoUpdateVersions := true,

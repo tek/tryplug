@@ -106,6 +106,11 @@ trait Tryplug
       )
   }
 
+  def userLevelDebugDeps = {
+    Project(userLevelName, file("."))
+      .dependsOn(deps.refs(userLevelName): _*)
+  }
+
   val scalaVersionSetting = scalaVersion := "2.11.7"
 
   def pluginVersionDefaults = List(

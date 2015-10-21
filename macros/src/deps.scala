@@ -143,7 +143,7 @@ trait Deps
   }
 
   val scalazV = "7.1.+"
-  val specsV = "3.6.4"
+  val specsV = "+"
 
   def common = ids(
     "org.scalaz" %% "scalaz-concurrent" % scalazV,

@@ -147,7 +147,7 @@ trait Deps
 
   def common = ids(
     "org.scalaz" %% "scalaz-concurrent" % scalazV,
-    "org.scalaz.stream" %% "scalaz-stream" % "0.7.2a"
+    "org.scalaz.stream" %% "scalaz-stream" % "+"
   )
 
   def unit = ids(

@@ -154,15 +154,14 @@ trait Deps
     "org.scalaz.stream" %% "scalaz-stream" % "+"
   )
 
-  def unit = ids(
+  def testCommon = ids(
     "org.scalatest" %% "scalatest" % "2.2.+",
     "org.specs2" %% "specs2-core" % specsV
   )
 
-  def integration = ids(
-    "org.scalatest" %% "scalatest" % "2.2.+",
-    "org.specs2" %% "specs2-core" % specsV
-  )
+  def unit = testCommon
+
+  def integration = testCommon
 }
 
 object NoDeps

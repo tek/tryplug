@@ -57,9 +57,11 @@ trait Versions
 
   def versionDirs = projectDir.toSeq
 
+  def handlePrefix = ""
+
   def writeVersion(handle: String, version: String)(implicit log: Logger) = {
     def write(dir: File) = {
-      val content = s"""$handle in Global := "$version""""
+      val content = s"""$handlePrefix$handle in Global := "$version""""
       val f = dir / s"$handle.sbt"
       IO.write(f, content)
     }

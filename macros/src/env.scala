@@ -19,7 +19,7 @@ object Env
 
   val projectBaseProp = "tryp.projectsdir"
 
-  val projectBasePath = sys.props.getOrElse(
+  lazy val projectBasePath = sys.props.getOrElse(
     projectBaseProp,
     sys.env.get(projectBaseEnvVar)
       .getOrElse(sys.error(

@@ -32,8 +32,6 @@ trait Tryplug
 
   def trypOrg = "tryp.sbt"
 
-  def trypPath = Env.localProject("sbt-tryp")
-
   def userLevelName = "user-level"
 
   object TryplugDeps
@@ -51,9 +49,9 @@ trait Tryplug
       pd(huy, sdkName, sdkVersion, "pfn", s"pfn/$sdkName"),
       pd(huy, s"android-$protifyName", protifyVersion, "pfn",
         s"pfn/$protifyName"),
-      pd("tryp.sbt", s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
+      pd(trypOrg, s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
         androidName),
-      pd("tryp.sbt", "tryplug", tryplugVersion, "tek", "tek/tryplug",
+      pd(trypOrg, "tryplug", tryplugVersion, "tek", "tek/tryplug",
         "tryplug", "macros")
     )
   }

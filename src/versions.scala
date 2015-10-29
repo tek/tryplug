@@ -83,11 +83,13 @@ object VersionUpdateKeys
 {
   val versions = settingKey[Seq[PluginSpec]]("auto-updated plugins") in Tryp
   val projectDir =
-    settingKey[File]("project base dir into which to write versions") in Tryp
-  val updateVersions = taskKey[Unit]("updateVersions") in Tryp
+    settingKey[File]("project base dirs into which to write versions") in Tryp
+  val updateVersions = taskKey[Unit]("update plugin dep versions") in Tryp
   val autoUpdateVersions =
     settingKey[Boolean]("update plugin versions when updating dependencies")
       .in(Tryp)
+  val versionUpdater =
+    settingKey[Versions]("Versions instance used for updating plugins") in Tryp
 }
 
 object PluginVersionUpdate
@@ -104,6 +106,11 @@ extends AutoPlugin
     autoUpdateVersions := false,
     projectDir := (baseDirectory in ThisBuild).value,
     updateVersions <<= updatePluginVersionsTask,
+    versionUpdater := {
+        new Versions {
+        def projectDir = Option(autoImport.projectDir.value)
+      }
+    },
     update <<= update dependsOn Def.taskDyn {
       if (autoUpdateVersions.value) updatePluginVersionsTask
       else Def.task()
@@ -112,9 +119,7 @@ extends AutoPlugin
 
   val updatePluginVersionsTask = Def.task {
     implicit val log = streams.value.log
-    val updater = new Versions {
-      def projectDir = Option(autoImport.projectDir.value)
-    }
+    val updater = versionUpdater.value
     versions.value foreach(updater.update)
   }
 }

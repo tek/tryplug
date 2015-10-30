@@ -149,13 +149,15 @@ trait Deps
   // line yet register as newer than 3.6.x
   val specsV = "3.6.5"
 
+  val scalatestV = "2.2.+" 
+
   def common = ids(
     "org.scalaz" %% "scalaz-concurrent" % scalazV,
     "org.scalaz.stream" %% "scalaz-stream" % "+"
   )
 
   def commonTestIds = ids(
-    "org.scalatest" %% "scalatest" % "2.2.+",
+    "org.scalatest" %% "scalatest" % scalatestV,
     "org.specs2" %% "specs2-core" % specsV
   )
 

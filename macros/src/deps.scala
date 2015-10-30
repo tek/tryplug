@@ -161,6 +161,11 @@ trait Deps
     "org.specs2" %% "specs2-core" % specsV
   )
 
+  def commonTestIdsScoped = ids(
+    "org.scalatest" %% "scalatest" % scalatestV % "test",
+    "org.specs2" %% "specs2-core" % specsV % "test"
+  )
+
   def unit = commonTestIds
 
   def integration = commonTestIds

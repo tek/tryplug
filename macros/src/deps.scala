@@ -7,13 +7,14 @@ import sbt.Keys._
 
 import Types._
 
-class TrypId(plainId: DepSpec, path: String, sub: Seq[String], dev: Boolean)
+class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
+  sub: Seq[String], dev: Boolean)
 {
-  def no = new TrypId(plainId, path, sub, false)
+  def no = new TrypId(id, depspec, path, sub, false)
 
   def development = Env.development && dev
 
-  def id = if(development) TrypId.empty else plainId
+  def dep = if(development) TrypId.empty else depspec
 
   def projects = {
     if (sub.isEmpty) List(RootProject(Env.localProject(path)))
@@ -25,7 +26,12 @@ class TrypId(plainId: DepSpec, path: String, sub: Seq[String], dev: Boolean)
     else List()
   }
 
-  override def toString = s"TrypId($plainId, $path, $sub, $dev)"
+  override def toString = s"TrypId($id, $path, $sub, $dev)"
+
+  def info = {
+    if (dev) s"$path${sub mkString("[", ",", "]")}"
+    else id.toString
+  }
 }
 
 case class PluginSpec(user: String, pkg: String, label: String,
@@ -34,9 +40,9 @@ case class PluginSpec(user: String, pkg: String, label: String,
   def invalid = user == Pspec.invalid
 }
 
-class PluginTrypId(plainId: DepSpec, path: String, sub: Seq[String],
+class PluginTrypId(depspec: DepSpec, path: String, sub: Seq[String],
   dev: Boolean, val version: Setting[Seq[PluginSpec]])
-extends TrypId(plainId, path, sub, dev)
+extends TrypId(TrypId.invalid, depspec, path, sub, dev)
 {
   def aRefs = super.projects
 
@@ -48,7 +54,9 @@ object TrypId
 {
   def empty = libraryDependencies ++= List()
 
-  def plain(id: DepSpec) = new TrypId(id, "", Seq(), false)
+  def plain(depspec: DepSpec) = new TrypId(invalid, depspec, "", Seq(), false)
+
+  def invalid = "invalid" % "invaild" % "1"
 }
 
 object Deps
@@ -59,7 +67,7 @@ object Deps
     import c.universe._
     c.Expr[TrypId] {
       q"""new tryp.TrypId(
-        libraryDependencies += $id, $path, Seq(..$sub), true
+        $id, libraryDependencies += $id, $path, Seq(..$sub), true
       )
       """
     }
@@ -89,7 +97,7 @@ object Deps
 trait Deps
 {
   implicit def ModuleIDtoTrypId(id: ModuleID) =
-    new TrypId(libraryDependencies += id, "", List(), false)
+    new TrypId(id, libraryDependencies += id, "", List(), false)
 
   implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {
     def fetch(key: A) = m.get(key).toSeq.flatten
@@ -110,7 +118,7 @@ trait Deps
     bintray: String, github: String, sub: String*) = macro Deps.pdImpl
 
   def manualDd(normal: DepSpec, path: String, sub: String*) =
-    new TrypId(normal, path, sub, true)
+    new TrypId(TrypId.invalid, normal, path, sub, true)
 
   def defaultResolvers = Seq(
       Resolver.sonatypeRepo("releases"),
@@ -126,7 +134,7 @@ trait Deps
   // if env is development, devdeps return empty settings
   def apply(name: String): Setts = {
     Seq(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++
-      (common ++ deps.fetch(name)).map(_.id)
+      (common ++ deps.fetch(name)).map(_.dep)
   }
 
   // ProjectRef instances for each devdep's subprojects
@@ -149,7 +157,7 @@ trait Deps
   // line yet register as newer than 3.6.x
   val specsV = "3.6.5"
 
-  val scalatestV = "2.2.+" 
+  val scalatestV = "2.2.+"
 
   def common = ids(
     "org.scalaz" %% "scalaz-concurrent" % scalazV,

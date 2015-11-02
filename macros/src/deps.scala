@@ -22,7 +22,7 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
   }
 
   def refs = {
-    if (development) projects.map(a ⇒ a: ClasspathDep[ProjectReference])
+    if (development) projects.map(a ⇒ a: SbtDep)
     else List()
   }
 

@@ -94,9 +94,24 @@ object Deps
   }
 }
 
+class ModuleIDOps(id: ModuleID)
+{
+  def isAar = {
+    id.explicitArtifacts.exists(_.`type` == "aar")
+  }
+}
+
+trait ToModuleIDOps
+{
+  implicit def ToModuleIDOps(id: ModuleID) = new ModuleIDOps(id)
+}
+
+object ModuleID
+extends ToModuleIDOps
+
 trait Deps
 {
-  implicit def ModuleIDtoTrypId(id: ModuleID) =
+  implicit def moduleIDtoTrypId(id: ModuleID) =
     new TrypId(id, libraryDependencies += id, "", List(), false)
 
   implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {

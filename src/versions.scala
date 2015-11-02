@@ -109,7 +109,7 @@ extends AutoPlugin
     projectDir := (baseDirectory in ThisBuild).value,
     updateVersions <<= updatePluginVersionsTask,
     versionUpdater := {
-        new Versions {
+      new Versions {
         def projectDir = Option(autoImport.projectDir.value)
       }
     },

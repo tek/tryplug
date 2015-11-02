@@ -58,7 +58,7 @@ trait Tryplug
 
   def deps: Deps = TryplugDeps
 
-  def compilerSettings = Seq(
+  def compilerSettings = List(
     scalacOptions ++= Seq(
       "-feature",
       "-deprecation",
@@ -76,11 +76,12 @@ trait Tryplug
     (updateOptions := updateOptions.value.withCachedResolution(true))
   ) ++ compilerSettings
 
-  def basicSettings = commonBasicSettings ++ List(
+  def trypSettings = commonBasicSettings ++ List(
+    organization := "tryp",
     scalaVersionSetting
   )
 
-  def basicPluginSettings = commonBasicSettings ++ List(
+  def trypPluginSettings = commonBasicSettings ++ List(
     organization := "tryp.sbt",
     sbtPlugin := true,
     scalaSource in Compile := baseDirectory.value / "src",
@@ -91,7 +92,7 @@ trait Tryplug
 
   def pluginSubProject(name: String) = {
     Project(name, file(name))
-      .settings(basicPluginSettings: _*)
+      .settings(trypPluginSettings: _*)
       .settings(deps(name): _*)
       .settings(deps.pluginVersions(name): _*)
       .settings(VersionUpdateKeys.autoUpdateVersions := true)

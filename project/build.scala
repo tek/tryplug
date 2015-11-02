@@ -11,7 +11,6 @@ extends Build
 
   lazy val common = Seq(
     scalaSource in Compile := baseDirectory.value / "src",
-    organization := "tryp.sbt",
     sbtPlugin := true,
     scalacOptions ++= Seq(
       "-feature",

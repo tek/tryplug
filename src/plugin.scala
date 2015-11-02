@@ -39,6 +39,6 @@ with Tryplug
     update <<= update dependsOn updateTryplugVersion,
     bintrayPluginResolver("pfn"),
     addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
-  ) ++ basicPluginSettings ++ deps(userLevelName) ++
+  ) ++ trypPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 }

@@ -83,7 +83,7 @@ import TrypKeys.Tryp
 
 object VersionUpdateKeys
 {
-  val versions = settingKey[List[PluginSpec]]("auto-updated plugins") in Tryp
+  val versions = settingKey[Seq[PluginSpec]]("auto-updated plugins") in Tryp
   val projectDir =
     settingKey[File]("project base dirs into which to write versions") in Tryp
   val updateVersions = taskKey[Unit]("update plugin dep versions") in Tryp

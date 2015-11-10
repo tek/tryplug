@@ -41,7 +41,7 @@ case class PluginSpec(user: String, pkg: String, label: String,
 }
 
 class PluginTrypId(depspec: DepSpec, path: String, sub: List[String],
-  dev: Boolean, val version: Setting[List[PluginSpec]])
+  dev: Boolean, val version: Setting[Seq[PluginSpec]])
 extends TrypId(TrypId.invalid, depspec, path, sub, dev)
 {
   def aRefs = super.projects
@@ -114,7 +114,7 @@ trait Deps
   implicit def moduleIDtoTrypId(id: ModuleID) =
     new TrypId(id, libraryDependencies += id, "", List(), false)
 
-  implicit class MapOps[A, B](m: Map[A, _ <: List[B]]) {
+  implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {
     def fetch(key: A) = m.get(key).toList.flatten
   }
 

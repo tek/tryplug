@@ -55,7 +55,7 @@ trait Versions
 
   def projectDir: Option[File]
 
-  def versionDirs = projectDir.toSeq
+  def versionDirs = projectDir.toList
 
   def handlePrefix = ""
 
@@ -83,7 +83,7 @@ import TrypKeys.Tryp
 
 object VersionUpdateKeys
 {
-  val versions = settingKey[Seq[PluginSpec]]("auto-updated plugins") in Tryp
+  val versions = settingKey[List[PluginSpec]]("auto-updated plugins") in Tryp
   val projectDir =
     settingKey[File]("project base dirs into which to write versions") in Tryp
   val updateVersions = taskKey[Unit]("update plugin dep versions") in Tryp
@@ -103,7 +103,7 @@ extends AutoPlugin
   val autoImport = VersionUpdateKeys
   import autoImport._
 
-  override def projectSettings = super.projectSettings ++ Seq(
+  override def projectSettings = super.projectSettings ++ List(
     versions := Nil,
     autoUpdateVersions := false,
     projectDir := (baseDirectory in ThisBuild).value,

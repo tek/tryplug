@@ -8,7 +8,7 @@ import sbt.Keys._
 import Types._
 
 class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
-  sub: Seq[String], dev: Boolean)
+  sub: List[String], dev: Boolean)
 {
   def no = new TrypId(id, depspec, path, sub, false)
 
@@ -40,8 +40,8 @@ case class PluginSpec(user: String, pkg: String, label: String,
   def invalid = user == Pspec.invalid
 }
 
-class PluginTrypId(depspec: DepSpec, path: String, sub: Seq[String],
-  dev: Boolean, val version: Setting[Seq[PluginSpec]])
+class PluginTrypId(depspec: DepSpec, path: String, sub: List[String],
+  dev: Boolean, val version: Setting[List[PluginSpec]])
 extends TrypId(TrypId.invalid, depspec, path, sub, dev)
 {
   def aRefs = super.projects
@@ -54,7 +54,7 @@ object TrypId
 {
   def empty = libraryDependencies ++= List()
 
-  def plain(depspec: DepSpec) = new TrypId(invalid, depspec, "", Seq(), false)
+  def plain(depspec: DepSpec) = new TrypId(invalid, depspec, "", List(), false)
 
   def invalid = "invalid" % "invaild" % "1"
 }
@@ -67,7 +67,7 @@ object Deps
     import c.universe._
     c.Expr[TrypId] {
       q"""new tryp.TrypId(
-        $id, libraryDependencies += $id, $path, Seq(..$sub), true
+        $id, libraryDependencies += $id, $path, List(..$sub), true
       )
       """
     }
@@ -86,7 +86,7 @@ object Deps
     c.Expr[PluginTrypId] {
       val vspec = Pspec.create(c)(bintray, pkg, version)
       q"""new tryp.PluginTrypId(
-        plugin($org, $pkg, $version), $github, Seq(..$sub), true,
+        plugin($org, $pkg, $version), $github, List(..$sub), true,
           VersionUpdateKeys.versions += $vspec
       )
       """
@@ -114,13 +114,13 @@ trait Deps
   implicit def moduleIDtoTrypId(id: ModuleID) =
     new TrypId(id, libraryDependencies += id, "", List(), false)
 
-  implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {
-    def fetch(key: A) = m.get(key).toSeq.flatten
+  implicit class MapOps[A, B](m: Map[A, _ <: List[B]]) {
+    def fetch(key: A) = m.get(key).toList.flatten
   }
 
-  def ids(i: TrypId*) = Seq[TrypId](i: _*)
+  def ids(i: TrypId*) = List[TrypId](i: _*)
 
-  def deps: Map[String, Seq[TrypId]] = Map(
+  def deps: Map[String, List[TrypId]] = Map(
     "unit" → unit,
     "integration" → integration
   )
@@ -133,9 +133,9 @@ trait Deps
     bintray: String, github: String, sub: String*) = macro Deps.pdImpl
 
   def manualDd(normal: DepSpec, path: String, sub: String*) =
-    new TrypId(TrypId.invalid, normal, path, sub, true)
+    new TrypId(TrypId.invalid, normal, path, sub.toList, true)
 
-  def defaultResolvers = Seq(
+  def defaultResolvers = List(
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
       Resolver.sonatypeRepo("staging"),
@@ -143,12 +143,12 @@ trait Deps
       Resolver.jcenterRepo
     )
 
-  def resolvers: Map[String, Seq[Resolver]] = Map()
+  def resolvers: Map[String, List[Resolver]] = Map()
 
   // `libraryDependencies += id` for each dep
   // if env is development, devdeps return empty settings
   def apply(name: String): Setts = {
-    Seq(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++
+    List(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++
       (common ++ deps.fetch(name)).map(_.dep)
   }
 

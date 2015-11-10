@@ -59,7 +59,7 @@ trait Tryplug
   def deps: Deps = TryplugDeps
 
   def compilerSettings = List(
-    scalacOptions ++= Seq(
+    scalacOptions ++= List(
       "-feature",
       "-deprecation",
       "-unchecked",

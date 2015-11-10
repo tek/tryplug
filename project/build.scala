@@ -4,15 +4,15 @@ import Keys._
 object TryplugBuild
 extends Build
 {
-  override lazy val settings = super.settings ++ Seq(
+  override lazy val settings = super.settings ++ List(
     organization := "tryp.sbt",
     licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
   )
 
-  lazy val common = Seq(
+  lazy val common = List(
     scalaSource in Compile := baseDirectory.value / "src",
     sbtPlugin := true,
-    scalacOptions ++= Seq(
+    scalacOptions ++= List(
       "-feature",
       "-deprecation",
       "-unchecked",
@@ -27,7 +27,7 @@ extends Build
 
   lazy val tryplug = project in file(".") settings(
     name := "tryplug",
-    libraryDependencies ++= Seq(
+    libraryDependencies ++= List(
       "io.argonaut" %% "argonaut" % "+",
       "me.lessis" %% "semverfi" % "+"
     ),

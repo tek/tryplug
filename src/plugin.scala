@@ -31,7 +31,7 @@ with Tryplug
     updater.update(pspec("tek", "tryplug", TrypKeys.tryplugVersion))
   }
 
-  override def projectSettings = super.projectSettings ++ Seq(
+  override def projectSettings = super.projectSettings ++ List(
     name := userLevelName,
     VersionUpdateKeys.autoUpdateVersions := true,
     bintrayTekResolver,

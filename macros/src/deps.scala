@@ -121,8 +121,7 @@ trait Deps
   def ids(i: TrypId*) = List[TrypId](i: _*)
 
   def deps: Map[String, List[TrypId]] = Map(
-    "unit" → unit,
-    "integration" → integration
+    "unit" → unit
   )
 
   def dd(id: ModuleID, path: String, sub: String*) = macro Deps.ddImpl
@@ -190,8 +189,6 @@ trait Deps
   )
 
   def unit = commonTestIds
-
-  def integration = commonTestIds
 }
 
 object NoDeps

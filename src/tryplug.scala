@@ -138,4 +138,6 @@ trait Tryplug
 
   def pspec(user: String, pkg: String, version: SettingKey[String]) =
     macro Pspec.create
+
+  def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 }

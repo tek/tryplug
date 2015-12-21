@@ -15,7 +15,6 @@ object TrypKeys
   val tryplugVersion = settingKey[String]("tryplug version") in Tryp
   val sdkVersion = settingKey[String]("android-sdk-plugin version") in Tryp
   val protifyVersion = settingKey[String]("protify version") in Tryp
-  val ensimeVersion = settingKey[String]("ensime version") in Tryp
 }
 
 trait Tryplug
@@ -53,9 +52,7 @@ trait Tryplug
       pd(trypOrg, s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
         androidName),
       pd(trypOrg, "tryplug", tryplugVersion, "tek", "tek/tryplug",
-        "tryplug", "macros"),
-      pd("org.ensime", "ensime-sbt", ensimeVersion, "ensime",
-        "ensime/ensime-sbt")
+        "tryplug", "macros")
     )
   }
 

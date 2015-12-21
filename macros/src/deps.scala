@@ -46,8 +46,7 @@ extends TrypId(TrypId.invalid, depspec, path, sub, dev)
 {
   def aRefs = super.projects
 
-  override def development =
-    super.development && sys.env.contains("TRYP_DEBUG")
+  override def development = super.development && Env.trypDebug.isDefined
 }
 
 object TrypId

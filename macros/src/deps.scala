@@ -34,7 +34,7 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
   }
 }
 
-case class PluginSpec(user: String, pkg: String, label: String,
+case class PluginSpec(user: String, repo: String, pkg: String, label: String,
   current: String)
 {
   def invalid = user == Pspec.invalid
@@ -78,12 +78,12 @@ object Deps
   }
 
   def pdImpl(c: Context)(org: c.Expr[String], pkg: c.Expr[String],
-    version: c.Expr[SettingKey[String]], bintray: c.Expr[String],
-    github: c.Expr[String], sub: c.Expr[String]*) =
-  {
+    version: c.Expr[SettingKey[String]], user: c.Expr[String],
+    repo: c.Expr[String], github: c.Expr[String], sub: c.Expr[String]*
+    ) = {
     import c.universe._
     c.Expr[PluginTrypId] {
-      val vspec = Pspec.create(c)(bintray, pkg, version)
+      val vspec = Pspec.create(c)(user, repo, pkg, version)
       q"""new tryp.PluginTrypId(
         plugin($org, $pkg, $version), $github, List(..$sub), true,
           VersionUpdateKeys.versions += $vspec
@@ -128,7 +128,8 @@ trait Deps
   def d(id: ModuleID) = macro Deps.dImpl
 
   def pd(org: String, pkg: String, version: SettingKey[String],
-    bintray: String, github: String, sub: String*) = macro Deps.pdImpl
+    user: String, repo: String, github: String, sub: String*) =
+      macro Deps.pdImpl
 
   def manualDd(normal: DepSpec, path: String, sub: String*) =
     new TrypId(TrypId.invalid, normal, path, sub.toList, true)
@@ -197,13 +198,13 @@ object Pspec
 {
   val invalid = "[-invalid-]"
 
-  def create(c: Context)(user: c.Expr[String], pkg: c.Expr[String],
-    version: c.Expr[SettingKey[String]]): c.Expr[Any] =
+  def create(c: Context)(user: c.Expr[String], repo: c.Expr[String],
+    pkg: c.Expr[String], version: c.Expr[SettingKey[String]]): c.Expr[Any] =
   {
     import c.universe._
     c.Expr(
       q"""
-      PluginSpec($user, $pkg, $version.key.label, $version.value)
+      PluginSpec($user, $repo, $pkg, $version.key.label, $version.value)
       """
     )
   }

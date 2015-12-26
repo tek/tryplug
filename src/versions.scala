@@ -17,8 +17,8 @@ trait Versions
 {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def info(user: String, pkg: String) = {
-    val url = mkUrl(user, pkg)
+  def info(user: String, repo: String, pkg: String) = {
+    val url = mkUrl(user, repo, pkg)
     Future {
       url.openConnection()
       Using.urlReader(IO.utf8)(url) { in ⇒
@@ -38,7 +38,7 @@ trait Versions
     if (spec.invalid)
       log.warn(s"invalid repo path '${spec.pkg}'")
     else {
-      info(spec.user, spec.pkg)
+      info(spec.user, spec.repo, spec.pkg)
         .map(_.decodeOption[PackageInfo])
         .andThen {
           case util.Success(Some(PackageInfo(_, v, _)))
@@ -68,8 +68,8 @@ trait Versions
     versionDirs map(write)
   }
 
-  def mkUrl(user: String, pkg: String) = {
-    new URL(s"https://api.bintray.com/packages/$user/sbt-plugins/$pkg")
+  def mkUrl(user: String, repo: String, pkg: String) = {
+    new URL(s"https://api.bintray.com/packages/$user/$repo/$pkg")
   }
 
   implicit def packageInfoCodecJson: CodecJson[PackageInfo] =

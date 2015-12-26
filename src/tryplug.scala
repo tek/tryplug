@@ -46,13 +46,13 @@ trait Tryplug
     val protifyName = "protify"
 
     val userLevel = ids(
-      pd(huy, sdkName, sdkVersion, "pfn", s"pfn/$sdkName"),
-      pd(huy, s"android-$protifyName", protifyVersion, "pfn",
+      pd(huy, sdkName, sdkVersion, "pfn", "sbt-plugins", s"pfn/$sdkName"),
+      pd(huy, s"android-$protifyName", protifyVersion, "pfn", "sbt-plugins",
         s"pfn/$protifyName"),
-      pd(trypOrg, s"tryp-$androidName", trypVersion, "tek", "tek/sbt-tryp",
-        androidName),
-      pd(trypOrg, "tryplug", tryplugVersion, "tek", "tek/tryplug",
-        "tryplug", "macros")
+      pd(trypOrg, s"tryp-$androidName", trypVersion, "tek", "sbt-plugins",
+        "tek/sbt-tryp", androidName),
+      pd(trypOrg, "tryplug", tryplugVersion, "tek", "sbt-plugins",
+        "tek/tryplug", "tryplug", "macros")
     )
   }
 
@@ -136,8 +136,9 @@ trait Tryplug
     setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
   }
 
-  def pspec(user: String, pkg: String, version: SettingKey[String]) =
-    macro Pspec.create
+  def pspec(user: String, repo: String, pkg: String,
+    version: SettingKey[String]) =
+      macro Pspec.create
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 }

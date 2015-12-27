@@ -35,7 +35,7 @@ trait Tryplug
   def userLevelName = "user-level"
 
   object TryplugDeps
-  extends Deps
+  extends PluginDeps
   {
     override def deps = super.deps ++ Map(
       userLevelName → userLevel

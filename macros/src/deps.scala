@@ -188,6 +188,12 @@ trait Deps
   def unit = commonTestIds
 }
 
+trait PluginDeps
+extends Deps
+{
+  override val scalazV = "7.1.+"
+}
+
 object NoDeps
 extends Deps
 

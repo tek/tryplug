@@ -27,8 +27,9 @@ extends Build
 
   lazy val tryplug = project in file(".") settings(
     name := "tryplug",
+    resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies ++= List(
-      "io.argonaut" %% "argonaut" % "+",
+      "io.argonaut" % "argonaut-scalaz_2.11" % "6.2-SNAPSHOT" changing(),
       "me.lessis" %% "semverfi" % "+"
     ),
     addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")

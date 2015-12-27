@@ -47,6 +47,8 @@ extends TrypId(TrypId.invalid, depspec, path, sub, dev)
   def aRefs = super.projects
 
   override def development = super.development && Env.trypDebug.isDefined
+
+  override def no = new PluginTrypId(depspec, path, sub, false, version)
 }
 
 object TrypId

@@ -12,6 +12,9 @@ extends Build
   lazy val common = List(
     scalaSource in Compile := baseDirectory.value / "src",
     sbtPlugin := true,
+    publishMavenStyle := false,
+    publishArtifact in (Compile, packageDoc) := false,
+    publishArtifact in (Compile, packageSrc) := false,
     scalacOptions ++= List(
       "-feature",
       "-deprecation",

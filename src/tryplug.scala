@@ -95,15 +95,26 @@ trait Tryplug
       .settings(trypPluginSettings: _*)
       .settings(deps(name): _*)
       .settings(deps.pluginVersions(name): _*)
-      .settings(VersionUpdateKeys.autoUpdateVersions := true)
+      .settings(
+        bintrayTekResolver,
+        VersionUpdateKeys.autoUpdateVersions := true
+      )
       .dependsOn(deps.refs(name): _*)
   }
 
   def pluginProject(name: String) = {
     pluginSubProject(name).in(file("."))
       .settings(
-        bintrayTekResolver,
-        publishTo := None
+        publishTo := None,
+        publish := (),
+        publishLocal := (),
+        VersionUpdateKeys.versionUpdater := {
+          new Versions {
+            def projectDir =
+              Option(VersionUpdateKeys.projectDir.value / "project")
+            override def handlePrefix = "P."
+          }
+        }
       )
   }
 

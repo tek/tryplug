@@ -29,7 +29,7 @@ extends Build
     name := "tryplug",
     resolvers += Resolver.sonatypeRepo("snapshots"),
     libraryDependencies ++= List(
-      "io.argonaut" % "argonaut-scalaz_2.11" % "6.2-SNAPSHOT" changing(),
+      "io.argonaut" %% "argonaut" % "+",
       "me.lessis" %% "semverfi" % "+"
     ),
     addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")

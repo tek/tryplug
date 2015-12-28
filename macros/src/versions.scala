@@ -17,7 +17,7 @@ import sbt.Keys._
 
 trait VersionApi
 {
-  def latest: Task[SemVersion]
+  def latest: Task[String]
 
   def request(url: URL) = {
     Task {
@@ -38,7 +38,7 @@ case class NopApi(spec: PluginSpec)(implicit log: Logger)
 extends VersionApi
 {
   def latest = {
-    Task(Version("0"))
+    Task("0")
   }
 }
 
@@ -56,10 +56,10 @@ extends VersionApi
     response
       .map(_.decodeEither[PackageInfo])
       .map {
-          case \/-(PackageInfo(_, v, _)) ⇒ Version(v)
+          case \/-(PackageInfo(_, v, _)) ⇒ v
           case -\/(t) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $t")
-            Version("0")
+            "0"
       }
   }
 
@@ -75,10 +75,10 @@ extends VersionApi
     request(mkUrl(spec.org, spec.pkg))
       .map(parseResponse)
       .map {
-          case \/-(v) ⇒ Version(v)
+          case \/-(v) ⇒ v
           case -\/(err) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $err")
-            Version("0")
+            "0"
       }
   }
 
@@ -115,7 +115,7 @@ trait Versions
       api(spec).latest.runAsync {
         case -\/(t) ⇒
           log.error(s"failed to fetch version for ${spec.pkg}: $t")
-        case \/-(v) if v > Version(spec.current) ⇒
+        case \/-(v) if Version(v) > Version(spec.current) ⇒
           writeVersion(spec.label, v)
           log.warn(s"updating version for ${spec.pkg}: ${spec.current} ⇒ $v")
       }
@@ -138,7 +138,7 @@ trait Versions
 
   def handlePrefix = ""
 
-  def writeVersion(handle: String, version: SemVersion)(implicit log: Logger) =
+  def writeVersion(handle: String, version: String)(implicit log: Logger) =
   {
     def write(dir: File) = {
       val content = s"""$handlePrefix$handle in Global := "$version""""

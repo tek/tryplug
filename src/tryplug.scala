@@ -75,7 +75,10 @@ trait Tryplug
     scalaSource in Compile := baseDirectory.value / "src",
     licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
     bintrayRepository in bintray := "sbt-plugins",
-    bintrayOrganization in bintray := None
+    bintrayOrganization in bintray := None,
+    publishMavenStyle := false,
+    publishArtifact in (Compile, packageDoc) := false,
+    publishArtifact in (Compile, packageSrc) := false
   )
 
   def pluginSubProject(name: String) = {

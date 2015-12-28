@@ -96,7 +96,6 @@ trait Tryplug
   def pluginProject(name: String) = {
     pluginSubProject(name).in(file("."))
       .settings(
-        publishTo := None,
         publish := (),
         publishLocal := (),
         VersionUpdateKeys.versionUpdater := {

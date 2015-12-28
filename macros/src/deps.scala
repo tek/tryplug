@@ -81,7 +81,7 @@ extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
   {
     new PluginTrypId(org, pkg, version, path, sub, dev,
       Some(VersionUpdateKeys.versions +=
-        BintrayPluginSpec(user, repo, pkg, version.key.label, version.value)
+        BintrayPluginSpec(user, repo, name, version.key.label, version.value)
       )
     )
   }

@@ -39,7 +39,8 @@ extends Build
     libraryDependencies ++= List(
       "io.argonaut" %% "argonaut" % "+",
       "me.lessis" %% "semverfi" % "+",
-      "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary
+      "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
+      "org.scalaz" %% "scalaz-concurrent" % "7.1.+"
     ),
     addCompilerPlugin(
       "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.full)

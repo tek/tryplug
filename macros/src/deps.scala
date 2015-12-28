@@ -43,10 +43,26 @@ object TrypId
   def invalid = "invalid" % "invaild" % "1"
 }
 
-case class PluginSpec(user: String, repo: String, pkg: String, label: String,
-  current: String)
+trait PluginSpec
+{
+  def pkg: String
+  def label: String
+  def current: String
+  def invalid: Boolean
+}
+
+case class BintrayPluginSpec(user: String, repo: String, pkg: String,
+  label: String, current: String)
+extends PluginSpec
 {
   def invalid = user == Pspec.invalid
+}
+
+case class MavenPluginSpec(org: String, pkg: String, label: String,
+  current: String)
+extends PluginSpec
+{
+  def invalid = false
 }
 
 case class PluginTrypId(org: String, pkg: String, version: SettingKey[String],
@@ -65,7 +81,15 @@ extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
   {
     new PluginTrypId(org, pkg, version, path, sub, dev,
       Some(VersionUpdateKeys.versions +=
-        PluginSpec(user, repo, pkg, version.key.label, version.value)
+        BintrayPluginSpec(user, repo, pkg, version.key.label, version.value)
+      )
+    )
+  }
+
+  def maven = {
+    new PluginTrypId(org, pkg, version, path, sub, dev,
+      Some(VersionUpdateKeys.versions +=
+        MavenPluginSpec(org, pkg, version.key.label, version.value)
       )
     )
   }
@@ -209,13 +233,13 @@ object Pspec
 {
   val invalid = "[-invalid-]"
 
-  def create(c: Context)(user: c.Expr[String], repo: c.Expr[String],
+  def bintray(c: Context)(user: c.Expr[String], repo: c.Expr[String],
     pkg: c.Expr[String], version: c.Expr[SettingKey[String]]): c.Expr[Any] =
   {
     import c.universe._
     c.Expr(
       q"""
-      PluginSpec($user, $repo, $pkg, $version.key.label, $version.value)
+      BintrayPluginSpec($user, $repo, $pkg, $version.key.label, $version.value)
       """
     )
   }

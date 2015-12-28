@@ -138,9 +138,9 @@ trait Tryplug
     setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
   }
 
-  def pspec(user: String, repo: String, pkg: String,
+  def bintraySpec(user: String, repo: String, pkg: String,
     version: SettingKey[String]) =
-      macro Pspec.create
+      macro Pspec.bintray
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 }

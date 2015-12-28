@@ -29,7 +29,7 @@ with Tryplug
       def projectDir = Some(baseDirectory.value / "project")
     }
     updater.update(
-      pspec("tek", "sbt-plugins", "tryplug", TrypKeys.tryplugVersion))
+      bintraySpec("tek", "sbt-plugins", "tryplug", TrypKeys.tryplugVersion))
   }
 
   override def projectSettings = super.projectSettings ++ List(

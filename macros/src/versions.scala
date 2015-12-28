@@ -79,21 +79,6 @@ trait Versions
   case class PackageInfo(name: String, version: String, versions: List[String])
 }
 
-import TrypKeys.Tryp
-
-object VersionUpdateKeys
-{
-  val versions = settingKey[Seq[PluginSpec]]("auto-updated plugins") in Tryp
-  val projectDir =
-    settingKey[File]("project base dirs into which to write versions") in Tryp
-  val updateVersions = taskKey[Unit]("update plugin dep versions") in Tryp
-  val autoUpdateVersions =
-    settingKey[Boolean]("update plugin versions when updating dependencies")
-      .in(Tryp)
-  val versionUpdater =
-    settingKey[Versions]("Versions instance used for updating plugins") in Tryp
-}
-
 object PluginVersionUpdate
 extends AutoPlugin
 {

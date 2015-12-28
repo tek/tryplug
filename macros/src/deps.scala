@@ -34,23 +34,6 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
   }
 }
 
-case class PluginSpec(user: String, repo: String, pkg: String, label: String,
-  current: String)
-{
-  def invalid = user == Pspec.invalid
-}
-
-class PluginTrypId(depspec: DepSpec, path: String, sub: List[String],
-  dev: Boolean, val version: Setting[Seq[PluginSpec]])
-extends TrypId(TrypId.invalid, depspec, path, sub, dev)
-{
-  def aRefs = super.projects
-
-  override def development = super.development && Env.trypDebug.isDefined
-
-  override def no = new PluginTrypId(depspec, path, sub, false, version)
-}
-
 object TrypId
 {
   def empty = libraryDependencies ++= List()
@@ -58,6 +41,44 @@ object TrypId
   def plain(depspec: DepSpec) = new TrypId(invalid, depspec, "", List(), false)
 
   def invalid = "invalid" % "invaild" % "1"
+}
+
+case class PluginSpec(user: String, repo: String, pkg: String, label: String,
+  current: String)
+{
+  def invalid = user == Pspec.invalid
+}
+
+case class PluginTrypId(org: String, pkg: String, version: SettingKey[String],
+  path: String, sub: List[String], dev: Boolean = true,
+  pspec: Option[Setting[Seq[PluginSpec]]] = None)
+extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
+  path, sub, dev)
+{
+  def aRefs = super.projects
+
+  override def development = super.development && Env.trypDebug.isDefined
+
+  override def no = copy(dev = false)
+
+  def bintray(user: String, repo: String = "sbt-plugins", name: String = pkg) =
+  {
+    new PluginTrypId(org, pkg, version, path, sub, dev,
+      Some(VersionUpdateKeys.versions +=
+        PluginSpec(user, repo, pkg, version.key.label, version.value)
+      )
+    )
+  }
+}
+
+object PluginTrypId
+{
+  def pluginDep(org: String, name: String, version: SettingKey[String]) =
+      libraryDependencies += Defaults.sbtPluginExtra(
+        org % name % version.value,
+        (sbtBinaryVersion in update).value,
+        (scalaBinaryVersion in update).value
+      )
 }
 
 object Deps
@@ -77,21 +98,6 @@ object Deps
   def dImpl(c: Context)(id: c.Expr[ModuleID]) = {
     import c.universe._
     c.Expr[TrypId] { q"tryp.TrypId.plain(libraryDependencies += $id)" }
-  }
-
-  def pdImpl(c: Context)(org: c.Expr[String], pkg: c.Expr[String],
-    version: c.Expr[SettingKey[String]], user: c.Expr[String],
-    repo: c.Expr[String], github: c.Expr[String], sub: c.Expr[String]*
-    ) = {
-    import c.universe._
-    c.Expr[PluginTrypId] {
-      val vspec = Pspec.create(c)(user, repo, pkg, version)
-      q"""new tryp.PluginTrypId(
-        plugin($org, $pkg, $version), $github, List(..$sub), true,
-          VersionUpdateKeys.versions += $vspec
-      )
-      """
-    }
   }
 }
 
@@ -129,9 +135,9 @@ trait Deps
 
   def d(id: ModuleID) = macro Deps.dImpl
 
-  def pd(org: String, pkg: String, version: SettingKey[String],
-    user: String, repo: String, github: String, sub: String*) =
-      macro Deps.pdImpl
+  def plugin(org: String, pkg: String, version: SettingKey[String],
+    github: String, sub: List[String] = List()) =
+      PluginTrypId(org, pkg, version, github, sub)
 
   def manualDd(normal: DepSpec, path: String, sub: String*) =
     new TrypId(TrypId.invalid, normal, path, sub.toList, true)
@@ -162,8 +168,8 @@ trait Deps
   // PluginSpec instance for each dep
   def pluginVersions(name: String) = {
     deps fetch(name) collect {
-      case i: PluginTrypId ⇒ i.version
-    }
+      case i: PluginTrypId ⇒ i.pspec
+    } flatten
   }
 
   val scalazV = "7.2.+"

@@ -8,25 +8,12 @@ import BintrayKeys._
 
 import Types._
 
-object TrypKeys
-{
-  val Tryp = config("tryp")
-  val trypVersion = settingKey[String]("tryp-build version") in Tryp
-  val tryplugVersion = settingKey[String]("tryplug version") in Tryp
-  val sdkVersion = settingKey[String]("android-sdk-plugin version") in Tryp
-  val protifyVersion = settingKey[String]("protify version") in Tryp
-}
-
 trait Tryplug
 {
   import TrypKeys._
 
   def plugin(org: String, name: String, version: SettingKey[String]) =
-      libraryDependencies += Defaults.sbtPluginExtra(
-        org % name % version.value,
-        (sbtBinaryVersion in update).value,
-        (scalaBinaryVersion in update).value
-      )
+    PluginTrypId.pluginDep(org, name, version)
 
   def androidName = "android"
 
@@ -46,13 +33,14 @@ trait Tryplug
     val protifyName = "protify"
 
     val userLevel = ids(
-      pd(huy, sdkName, sdkVersion, "pfn", "sbt-plugins", s"pfn/$sdkName"),
-      pd(huy, s"android-$protifyName", protifyVersion, "pfn", "sbt-plugins",
-        s"pfn/$protifyName"),
-      pd(trypOrg, s"tryp-$androidName", trypVersion, "tek", "sbt-plugins",
-        "tek/sbt-tryp", androidName),
-      pd(trypOrg, "tryplug", tryplugVersion, "tek", "sbt-plugins",
-        "tek/tryplug", "tryplug", "macros")
+      plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
+        .bintray("pfn"),
+      plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
+        .bintray("pfn"),
+      plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
+        List(androidName)).bintray("tek"),
+      plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
+        List("tryplug", "macros")).bintray("tek")
     )
   }
 

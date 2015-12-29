@@ -27,7 +27,7 @@ with Tryplug
 
   def userLevelName = "user-level"
 
-  def updateTryplugVersion = 
+  def updateTryplugVersion =
     projectUpdater("tek", "sbt-plugins", "tryplug", TrypKeys.tryplugVersion)
 
   override def projectSettings = super.projectSettings ++ List(

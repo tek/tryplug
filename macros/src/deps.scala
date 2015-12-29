@@ -227,6 +227,32 @@ trait PluginDeps
 extends Deps
 {
   override val scalazV = "7.1.+"
+
+  import TrypKeys._
+
+  def androidName = "android"
+  def trypOrg = "tryp.sbt"
+  val huy = "com.hanhuy.sbt"
+  val sdkName = "android-sdk-plugin"
+  val protifyName = "protify"
+
+  def androidSdk =
+    plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
+      .bintray("pfn")
+
+  def protify =
+    plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
+      .bintray("pfn")
+
+  def tryp =
+    plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
+      List(androidName))
+        .bintray("tek")
+
+  def tryplug =
+    plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
+      List("tryplug", "macros"))
+        .bintray("tek")
 }
 
 object NoDeps

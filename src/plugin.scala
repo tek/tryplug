@@ -50,24 +50,13 @@ with Tryplug
   object TrypDeps
   extends PluginDeps
   {
+    import Plugins._
+
     override def deps = super.deps ++ Map(
       userLevelName → userLevel
     )
 
-    val huy = "com.hanhuy.sbt"
-    val sdkName = "android-sdk-plugin"
-    val protifyName = "protify"
-
-    val userLevel = ids(
-      plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
-        .bintray("pfn"),
-      plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
-        .bintray("pfn"),
-      plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
-        List(androidName)).bintray("tek"),
-      plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
-        List("tryplug", "macros")).bintray("tek")
-    )
+    val userLevel = ids(androidSdk, protify, tryp, tryplug)
   }
 
   override def deps = TrypDeps

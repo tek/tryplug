@@ -15,10 +15,6 @@ trait Tryplug
   def plugin(org: String, name: String, version: SettingKey[String]) =
     PluginTrypId.pluginDep(org, name, version)
 
-  def androidName = "android"
-
-  def trypOrg = "tryp.sbt"
-
   def compilerSettings = List(
     scalacOptions ++= List(
       "-feature",

@@ -107,4 +107,14 @@ trait Tryplug
       macro Pspec.bintray
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
+
+  def projectUpdater(user: String, repo: String, id: String,
+    version: SettingKey[String]) = Def.task {
+      implicit val log = streams.value.log
+      val updater = new Versions {
+        def projectDir = Some(baseDirectory.value / "project")
+      }
+      updater.update(
+        bintraySpec(user, repo, id, version))
+  }
 }

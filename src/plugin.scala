@@ -27,14 +27,8 @@ with Tryplug
 
   def userLevelName = "user-level"
 
-  def updateTryplugVersion = Def.task {
-    implicit val log = streams.value.log
-    val updater = new Versions {
-      def projectDir = Some(baseDirectory.value / "project")
-    }
-    updater.update(
-      bintraySpec("tek", "sbt-plugins", "tryplug", TrypKeys.tryplugVersion))
-  }
+  def updateTryplugVersion = 
+    projectUpdater("tek", "sbt-plugins", "tryplug", TrypKeys.tryplugVersion)
 
   override def projectSettings = super.projectSettings ++ List(
     name := userLevelName,

@@ -12,6 +12,8 @@ extends AutoPlugin
   val autoImport = TrypKeys
 }
 
+import TrypKeys._
+
 object UserLevel
 extends AutoPlugin
 with Tryplug
@@ -22,6 +24,8 @@ with Tryplug
   {
     def debugDeps = userLevelDebugDeps
   }
+
+  def userLevelName = "user-level"
 
   def updateTryplugVersion = Def.task {
     implicit val log = streams.value.log
@@ -42,4 +46,35 @@ with Tryplug
     addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
   ) ++ trypPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
+
+  object TrypDeps
+  extends PluginDeps
+  {
+    override def deps = super.deps ++ Map(
+      userLevelName → userLevel
+    )
+
+    val huy = "com.hanhuy.sbt"
+    val sdkName = "android-sdk-plugin"
+    val protifyName = "protify"
+
+    val userLevel = ids(
+      plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
+        .bintray("pfn"),
+      plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
+        .bintray("pfn"),
+      plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
+        List(androidName)).bintray("tek"),
+      plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
+        List("tryplug", "macros")).bintray("tek")
+    )
+  }
+
+  override def deps = TrypDeps
+
+  def userLevelDebugDeps = {
+    Project(userLevelName, file("."))
+      .settings(pluginVersionDefaults: _*)
+      .dependsOn(deps.refs(userLevelName): _*)
+  }
 }

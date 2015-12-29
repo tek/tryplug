@@ -19,33 +19,6 @@ trait Tryplug
 
   def trypOrg = "tryp.sbt"
 
-  def userLevelName = "user-level"
-
-  object TryplugDeps
-  extends PluginDeps
-  {
-    override def deps = super.deps ++ Map(
-      userLevelName → userLevel
-    )
-
-    val huy = "com.hanhuy.sbt"
-    val sdkName = "android-sdk-plugin"
-    val protifyName = "protify"
-
-    val userLevel = ids(
-      plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
-        .bintray("pfn"),
-      plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
-        .bintray("pfn"),
-      plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
-        List(androidName)).bintray("tek"),
-      plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
-        List("tryplug", "macros")).bintray("tek")
-    )
-  }
-
-  def deps: Deps = TryplugDeps
-
   def compilerSettings = List(
     scalacOptions ++= List(
       "-feature",
@@ -93,6 +66,8 @@ trait Tryplug
       .dependsOn(deps.refs(name): _*)
   }
 
+  def deps: Deps = NoDeps
+
   def pluginProject(name: String) = {
     pluginSubProject(name).in(file("."))
       .settings(
@@ -106,12 +81,6 @@ trait Tryplug
           }
         }
       )
-  }
-
-  def userLevelDebugDeps = {
-    Project(userLevelName, file("."))
-      .settings(pluginVersionDefaults: _*)
-      .dependsOn(deps.refs(userLevelName): _*)
   }
 
   val scalaVersionSetting = scalaVersion := "2.11.7"

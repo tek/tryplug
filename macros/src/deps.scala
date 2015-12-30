@@ -12,7 +12,7 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
 {
   def no = new TrypId(id, depspec, path, sub, false)
 
-  def devBlocked = Env.wantDevDep(id.name)
+  def devBlocked = !Env.wantDevDep(id.name)
 
   def development = Env.development && dev && !devBlocked
 

@@ -88,7 +88,7 @@ trait Tryplug
     propVersion(tryplugVersion, "tryplug", "40")
   )
 
-  def homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
+  val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
 
   def bintrayPluginResolver(name: String) = {
     val u = url(s"https://dl.bintray.com/$name/sbt-plugins")

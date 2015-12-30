@@ -88,7 +88,7 @@ trait Tryplug
     propVersion(tryplugVersion, "tryplug", "40")
   )
 
-  val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
+  def homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
 
   def bintrayPluginResolver(name: String) = {
     val u = url(s"https://dl.bintray.com/$name/sbt-plugins")
@@ -108,7 +108,7 @@ trait Tryplug
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 
-  val nexusPattern = "[organisation]/[module]/[revision]/" +
+  def nexusPattern = "[organisation]/[module]/[revision]/" +
     "[artifact]-[revision](-[timestamp]).[ext]"
 
   def projectUpdater(user: String, repo: String, id: String,

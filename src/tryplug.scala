@@ -108,6 +108,9 @@ trait Tryplug
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 
+  val nexusPattern = "[organisation]/[module]/[revision]/" +
+    "[artifact]-[revision](-[timestamp]).[ext]"
+
   def projectUpdater(user: String, repo: String, id: String,
     version: SettingKey[String]) = Def.task {
       implicit val log = streams.value.log

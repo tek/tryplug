@@ -9,7 +9,6 @@ extends Build
     licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
   )
 
-
   val pattern = "[organisation]/[module]/[revision]/[artifact]-[revision]" +
     "(-[timestamp]).[ext]"
 

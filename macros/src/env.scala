@@ -1,5 +1,7 @@
 package tryp
 
+import scalaz._, Scalaz._
+
 import sbt._
 
 object Types
@@ -41,4 +43,17 @@ object Env
   }
 
   def trypDebug = sys.env.get("TRYP_DEBUG")
+
+  val devDepIncludeProp = "tryp.devdeps"
+
+  val devDepIncludeEnvVar = "TRYP_DEVDEPS"
+
+  lazy val devDepInclude = sys.props.getOrElse(
+    devDepIncludeProp,
+    sys.env.get(devDepIncludeEnvVar) | ""
+  ).split(",")
+
+  def wantDevDep(name: String) = {
+    devDepInclude.isEmpty || devDepInclude.contains(name)
+  }
 }

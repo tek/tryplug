@@ -50,7 +50,7 @@ with Tryplug
       userLevelName → userLevel
     )
 
-    val userLevel = ids(androidSdk, protify, tryp, tryplug)
+    val userLevel = ids(androidSdk, tryp, tryplug)
   }
 
   override def deps = TrypDeps

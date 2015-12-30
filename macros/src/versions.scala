@@ -171,12 +171,23 @@ extends AutoPlugin
     update <<= update dependsOn Def.taskDyn {
       if (autoUpdateVersions.value) updatePluginVersionsTask
       else Def.task()
-    }
+    },
+    updateAllPlugins := false,
+    updatePluginsInclude := List(),
+    updatePluginsExclude := List()
   )
 
   val updatePluginVersionsTask = Def.task {
     implicit val log = streams.value.log
-    val updater = versionUpdater.value
-    versions.value foreach(updater.update)
+    if (!sys.env.get("TRYP_SBT_DISABLE_VERSION_UPDATE").isDefined) {
+      val updater = versionUpdater.value
+      val wanted =
+        if (updateAllPlugins.value) versions.value
+        else versions.value.filter(
+          a ⇒ updatePluginsInclude.value.contains(a.pkg))
+      wanted
+        .filterNot(a ⇒ updatePluginsExclude.value.contains(a.pkg))
+        .foreach(updater.update)
+    }
   }
 }

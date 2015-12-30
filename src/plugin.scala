@@ -33,6 +33,7 @@ with Tryplug
   override def projectSettings = super.projectSettings ++ List(
     name := userLevelName,
     VersionUpdateKeys.autoUpdateVersions := true,
+    VersionUpdateKeys.updateAllPlugins := true,
     bintrayTekResolver,
     publishTo := None,
     update <<= update dependsOn updateTryplugVersion,

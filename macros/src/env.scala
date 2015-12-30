@@ -29,9 +29,8 @@ object Env
 
   lazy val projectBase = new File(projectBasePath)
 
-  // FIXME
   def cloneRepo(path: String, dirname: String) = {
-    s"hub clone $path ${Env.projectBase}/$dirname" !
+    s"git clone https://github.com/$path ${Env.projectBase}/$dirname" !
   }
 
   def localProject(path: String) = {

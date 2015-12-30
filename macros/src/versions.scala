@@ -6,7 +6,7 @@ import java.net.URL
 
 import scala.concurrent.Future
 
-import argonaut._, Argonaut._
+import argonaut._, Argonaut._, ArgonautScalaz._
 
 import scalaz._, Scalaz._, concurrent.Task
 
@@ -56,8 +56,8 @@ extends VersionApi
     response
       .map(_.decodeEither[PackageInfo])
       .map {
-          case \/-(PackageInfo(_, v, _)) ⇒ v
-          case -\/(t) ⇒
+          case Right(PackageInfo(_, v, _)) ⇒ v
+          case Left(t) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $t")
             "0"
       }
@@ -75,8 +75,8 @@ extends VersionApi
     request(mkUrl(spec.org, spec.pkg))
       .map(parseResponse)
       .map {
-          case \/-(v) ⇒ v
-          case -\/(err) ⇒
+          case Right(v) ⇒ v
+          case Left(err) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $err")
             "0"
       }
@@ -94,7 +94,7 @@ extends VersionApi
 
   def parseResponse(response: String) = {
     argonaut.Parse.parse(response)
-      .flatMap { a ⇒ lens.get(a).toRightDisjunction(s"invalid json: $a") }
+      .flatMap { a ⇒ lens.get(a).toRight(s"invalid json: $a") }
   }
 
   def mkUrl(org: String, pkg: String) = {

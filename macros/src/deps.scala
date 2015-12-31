@@ -47,14 +47,15 @@ object TrypId
 
 trait PluginSpec
 {
+  def org: String
   def pkg: String
   def label: String
   def current: String
   def invalid: Boolean
 }
 
-case class BintrayPluginSpec(user: String, repo: String, pkg: String,
-  label: String, current: String)
+case class BintrayPluginSpec(user: String, repo: String, org: String,
+  pkg: String, label: String, current: String)
 extends PluginSpec
 {
   def invalid = user == Pspec.invalid
@@ -83,7 +84,8 @@ extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
   {
     new PluginTrypId(org, pkg, version, path, sub, dev,
       Some(VersionUpdateKeys.versions +=
-        BintrayPluginSpec(user, repo, name, version.key.label, version.value)
+        BintrayPluginSpec(user, repo, org, name, version.key.label,
+          version.value)
       )
     )
   }
@@ -265,12 +267,14 @@ object Pspec
   val invalid = "[-invalid-]"
 
   def bintray(c: Context)(user: c.Expr[String], repo: c.Expr[String],
-    pkg: c.Expr[String], version: c.Expr[SettingKey[String]]): c.Expr[Any] =
+    org: c.Expr[String], pkg: c.Expr[String],
+    version: c.Expr[SettingKey[String]]): c.Expr[Any] =
   {
     import c.universe._
     c.Expr(
       q"""
-      BintrayPluginSpec($user, $repo, $pkg, $version.key.label, $version.value)
+      BintrayPluginSpec($user, $repo, $org, $pkg, $version.key.label,
+        $version.value)
       """
     )
   }

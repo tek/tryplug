@@ -17,7 +17,27 @@ import sbt.Keys._
 
 trait VersionApi
 {
-  def latest: Task[String]
+  def spec: PluginSpec
+
+  def latest = for {
+    local ← latestLocal
+    remote ← latestRemote
+  } yield((Version(local) > Version(remote)) ? local | remote)
+
+  val localRepo = sys.env.get("HOME").map(h ⇒ new File(h) / ".ivy2" / "local")
+
+  def latestLocal = {
+    Task {
+      localRepo
+        .map(_ / spec.org / spec.pkg / "scala_2.10" / "sbt_0.13" * "*")
+        .map(_.get.map(_.getName.toString))
+        .getOrElse(Nil)
+        .:+("0")
+        .maxBy(Version(_))
+    }
+  }
+
+  def latestRemote: Task[String]
 
   def request(url: URL) = {
     Task {
@@ -37,7 +57,7 @@ trait VersionApi
 case class NopApi(spec: PluginSpec)(implicit log: Logger)
 extends VersionApi
 {
-  def latest = {
+  def latestRemote = {
     Task("0")
   }
 }
@@ -51,7 +71,7 @@ extends VersionApi
     casecodec3(PackageInfo.apply, PackageInfo.unapply)("name",
       "latest_version", "versions")
 
-  def latest = {
+  def latestRemote = {
     val response = request(mkUrl(spec.user, spec.repo, spec.pkg))
     response
       .map(_.decodeEither[PackageInfo])
@@ -71,7 +91,7 @@ extends VersionApi
 case class MavenApi(spec: MavenPluginSpec)(implicit log: Logger)
 extends VersionApi
 {
-  def latest = {
+  def latestRemote = {
     request(mkUrl(spec.org, spec.pkg))
       .map(parseResponse)
       .map {

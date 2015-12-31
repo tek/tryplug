@@ -102,7 +102,7 @@ trait Tryplug
     setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
   }
 
-  def bintraySpec(user: String, repo: String, pkg: String,
+  def bintraySpec(user: String, repo: String, org: String, pkg: String,
     version: SettingKey[String]) =
       macro Pspec.bintray
 
@@ -111,13 +111,13 @@ trait Tryplug
   def nexusPattern = "[organisation]/[module]/[revision]/" +
     "[artifact]-[revision](-[timestamp]).[ext]"
 
-  def projectUpdater(user: String, repo: String, id: String,
+  def projectUpdater(user: String, repo: String, org: String, id: String,
     version: SettingKey[String]) = Def.task {
       implicit val log = streams.value.log
       val updater = new Versions {
         def projectDir = Some(baseDirectory.value / "project")
       }
       updater.update(
-        bintraySpec(user, repo, id, version))
+        bintraySpec(user, repo, org, id, version))
   }
 }

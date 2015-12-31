@@ -112,10 +112,11 @@ trait Tryplug
     "[artifact]-[revision](-[timestamp]).[ext]"
 
   def projectUpdater(user: String, repo: String, org: String, id: String,
-    version: SettingKey[String]) = Def.task {
+    version: SettingKey[String], prefix: String = "") = Def.task {
       implicit val log = streams.value.log
       val updater = new Versions {
         def projectDir = Some(baseDirectory.value / "project")
+        override def handlePrefix = prefix
       }
       updater.update(
         bintraySpec(user, repo, org, id, version))

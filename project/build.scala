@@ -9,11 +9,6 @@ extends Build
     licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
   )
 
-  val pattern = "[organisation]/[module]/[revision]/[artifact]-[revision]" +
-    "(-[timestamp]).[ext]"
-
-  val nexusUri = "https://nexus.ternarypulsar.com/nexus/content/repositories"
-
   lazy val common = List(
     scalaSource in Compile := baseDirectory.value / "src",
     sbtPlugin := true,
@@ -30,10 +25,7 @@ extends Build
       "-language:experimental.macros",
       "-language:existentials",
       "-language:higherKinds"
-    ),
-    resolvers ++= List("snapshots", "releases").map { tpe ⇒
-      Resolver.url(s"pulsar $tpe", url(s"$nexusUri/$tpe"))(Patterns(pattern))
-    }
+    )
   )
 
   lazy val tryplug = (project in file("."))

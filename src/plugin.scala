@@ -9,7 +9,10 @@ extends AutoPlugin
   override def requires = plugins.JvmPlugin
   override def trigger = allRequirements
 
-  val autoImport = TrypKeys
+  object autoImport
+  {
+    def tryplugVersion = TrypKeys.tryplugVersion
+  }
 }
 
 import TrypKeys._

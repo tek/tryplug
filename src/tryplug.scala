@@ -64,16 +64,39 @@ trait Tryplug
 
   def deps: Deps = NoDeps
 
-  def pluginProject(name: String) = {
+  def pluginRoot(name: String) = {
     pluginSubProject(name).in(file("."))
       .settings(
         publish := (),
-        publishLocal := (),
+        publishLocal := ()
+      )
+  }
+
+  def pluginProject(name: String) = {
+    pluginRoot(name)
+      .settings(
         VersionUpdateKeys.versionUpdater := {
           new Versions {
             def projectDir =
               Option(VersionUpdateKeys.projectDir.value / "project")
             override def handlePrefix = "P."
+          }
+        }
+      )
+  }
+
+  def projectBuildName = "project-build"
+
+  def projectBuild = {
+    pluginRoot(projectBuildName)
+      .settings(
+        VersionUpdateKeys.versionUpdater := {
+          new Versions {
+            def projectDir = None
+            override def versionDirs = {
+              val d = VersionUpdateKeys.projectDir.value / "project"
+              List(d, d / "project")
+            }
           }
         }
       )

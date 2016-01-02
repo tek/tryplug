@@ -248,6 +248,11 @@ extends Deps
     plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
       .bintray("pfn")
 
+  def trypBuild =
+    plugin(trypOrg, s"tryp-build", trypVersion, "tek/sbt-tryp",
+      List("build"))
+        .bintray("tek")
+
   def tryp =
     plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
       List(androidName))

@@ -66,3 +66,58 @@ with Tryplug
       .dependsOn(deps.refs(userLevelName): _*)
   }
 }
+
+object TrypGen
+extends AutoPlugin
+{
+  override def trigger = allRequirements
+  override def projectSettings = super.projectSettings ++ Seq(
+    commands ++= List(genTryp, genTrypAndroid)
+    )
+
+  val ptryp = """
+resolvers += Resolver.url(
+  "bintray-tek-sbt",
+  url("https://dl.bintray.com/tek/sbt-plugins")
+)(Resolver.ivyStylePatterns)
+
+addSbtPlugin("tryp.sbt" % "tryp-build" % "83-SNAPSHOT")
+  """
+
+  val pptryp = """
+resolvers += Resolver.url(
+  "bintray-tek-sbt",
+  url("https://dl.bintray.com/tek/sbt-plugins")
+)(Resolver.ivyStylePatterns)
+
+addSbtPlugin("tryp.sbt" % "tryp-build" % "83")
+  """
+
+  val pppbuild = """
+import sbt._
+
+object P
+extends Plugin
+{
+  val trypVersion = settingKey[String]("tryp version")
+}
+  """
+
+  def genTryp = Command.command("gen-tryp") { state ⇒
+    val extracted = sbt.Project.extract(state)
+    import extracted._
+    val pro = get(baseDirectory) / "project"
+    val pp = pro / "project"
+    val ppp = pp / "project"
+    IO.createDirectory(pp)
+    val trypsbt = "lazy val `project` = trypProjectBuild"
+    val trypver = """trypVersion := "83-SNAPSHOT""""
+    IO.write(pro / "trypVersion.sbt", trypver)
+    IO.write(pp / "trypVersion.sbt", trypver)
+    IO.write(pp / "tryp.sbt", trypsbt)
+    IO.write(ppp / "build.scala", pppbuild)
+    state
+  }
+
+  def genTrypAndroid = genTryp
+}

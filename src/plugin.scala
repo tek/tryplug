@@ -31,39 +31,18 @@ with Tryplug
 
   def userLevelName = "user-level"
 
-  def updateTryplugVersion =
-    projectUpdater("tek", "sbt-plugins", "tryp.sbt", "tryplug",
-      TrypKeys.tryplugVersion, prefix = "tryp.TrypKeys")
-
   override def projectSettings = super.projectSettings ++ List(
     name := userLevelName,
-    VersionUpdateKeys.autoUpdateVersions := false,
     bintrayTekResolver,
     publishTo := None,
-    update <<= update dependsOn updateTryplugVersion,
     bintrayPluginResolver("pfn"),
     addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
   ) ++ trypPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 
-  object TrypDeps
-  extends PluginDeps
-  {
-    import Plugins._
-
-    override def deps = super.deps ++ Map(
-      userLevelName → userLevel
-    )
-
-    val userLevel = ids(tryplug)
-  }
-
-  override def deps = TrypDeps
-
   def userLevelDebugDeps = {
     Project(userLevelName, file("."))
       .settings(pluginVersionDefaults: _*)
-      .dependsOn(deps.refs(userLevelName): _*)
   }
 }
 

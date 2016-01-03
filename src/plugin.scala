@@ -33,12 +33,11 @@ with Tryplug
 
   def updateTryplugVersion =
     projectUpdater("tek", "sbt-plugins", "tryp.sbt", "tryplug",
-      TrypKeys.tryplugVersion)
+      TrypKeys.tryplugVersion, prefix = "tryp.TrypKeys")
 
   override def projectSettings = super.projectSettings ++ List(
     name := userLevelName,
-    VersionUpdateKeys.autoUpdateVersions := true,
-    VersionUpdateKeys.updateAllPlugins := true,
+    VersionUpdateKeys.autoUpdateVersions := false,
     bintrayTekResolver,
     publishTo := None,
     update <<= update dependsOn updateTryplugVersion,

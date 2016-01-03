@@ -11,7 +11,6 @@ extends AutoPlugin
 
   object autoImport
   {
-    def tryplugVersion = TrypKeys.tryplugVersion
     def protifyVersion = TrypKeys.protifyVersion
     def sdkVersion = TrypKeys.sdkVersion
   }

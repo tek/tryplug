@@ -75,6 +75,7 @@ trait Tryplug
   def pluginProject(name: String) = {
     pluginRoot(name)
       .settings(
+        VersionUpdateKeys.updateAllPlugins := true,
         VersionUpdateKeys.versionUpdater := {
           new Versions {
             def projectDir =
@@ -94,7 +95,7 @@ trait Tryplug
           new Versions {
             def projectDir = None
             override def versionDirs = {
-              val d = VersionUpdateKeys.projectDir.value / "project"
+              val d = VersionUpdateKeys.projectDir.value
               List(d, d / "project")
             }
           }

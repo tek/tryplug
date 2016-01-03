@@ -12,6 +12,8 @@ trait Tryplug
 {
   import TrypKeys._
 
+  def tryplugVersion = TrypKeys.tryplugVersion
+
   def plugin(org: String, name: String, version: SettingKey[String]) =
     PluginTrypId.pluginDep(org, name, version)
 

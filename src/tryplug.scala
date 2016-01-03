@@ -74,35 +74,30 @@ trait Tryplug
       )
   }
 
+  def rootUpdater = {
+    VersionUpdateKeys.versionUpdater := {
+      new Versions {
+        def projectDir = None
+        override def versionDirs = {
+          val d = VersionUpdateKeys.projectDir.value
+          List(d, d / "project")
+        }
+      }
+    }
+  }
+
   def pluginProject(name: String) = {
     pluginRoot(name)
       .settings(
         VersionUpdateKeys.updateAllPlugins := true,
-        VersionUpdateKeys.versionUpdater := {
-          new Versions {
-            def projectDir =
-              Option(VersionUpdateKeys.projectDir.value / "project")
-            override def handlePrefix = "P."
-          }
-        }
+        rootUpdater
       )
   }
 
   def projectBuildName = "project-build"
 
   def projectBuild = {
-    pluginRoot(projectBuildName)
-      .settings(
-        VersionUpdateKeys.versionUpdater := {
-          new Versions {
-            def projectDir = None
-            override def versionDirs = {
-              val d = VersionUpdateKeys.projectDir.value
-              List(d, d / "project")
-            }
-          }
-        }
-      )
+    pluginProject(projectBuildName)
   }
 
   val scalaVersionSetting = scalaVersion := "2.11.7"

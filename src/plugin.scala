@@ -75,21 +75,15 @@ extends AutoPlugin
     commands ++= List(genTryp, genTrypAndroid)
     )
 
-  val ptryp = """
-resolvers += Resolver.url(
-  "bintray-tek-sbt",
-  url("https://dl.bintray.com/tek/sbt-plugins")
-)(Resolver.ivyStylePatterns)
+  val ptryp = "lazy val `project` = trypProjectBuild"
 
-addSbtPlugin("tryp.sbt" % "tryp-build" % "83-SNAPSHOT")
-  """
+  val trypver = """trypVersion := "83""""
 
   val pptryp = """
 resolvers += Resolver.url(
   "bintray-tek-sbt",
   url("https://dl.bintray.com/tek/sbt-plugins")
 )(Resolver.ivyStylePatterns)
-
 addSbtPlugin("tryp.sbt" % "tryp-build" % "83")
   """
 
@@ -110,11 +104,10 @@ extends Plugin
     val pp = pro / "project"
     val ppp = pp / "project"
     IO.createDirectory(pp)
-    val trypsbt = "lazy val `project` = trypProjectBuild"
-    val trypver = """trypVersion := "83-SNAPSHOT""""
     IO.write(pro / "trypVersion.sbt", trypver)
+    IO.write(pro / "tryp.sbt", ptryp)
     IO.write(pp / "trypVersion.sbt", trypver)
-    IO.write(pp / "tryp.sbt", trypsbt)
+    IO.write(pp / "tryp.sbt", pptryp)
     IO.write(ppp / "build.scala", pppbuild)
     state
   }

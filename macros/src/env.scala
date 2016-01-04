@@ -48,12 +48,11 @@ object Env
 
   val devDepIncludeEnvVar = "TRYP_DEVDEPS"
 
-  lazy val devDepInclude = sys.props.getOrElse(
-    devDepIncludeProp,
-    sys.env.get(devDepIncludeEnvVar) | ""
-  ).split(",")
+  lazy val devDepInclude = sys.props.get(devDepIncludeProp)
+    .orElse(sys.env.get(devDepIncludeEnvVar))
+    .map(_.split(","))
 
   def wantDevDep(name: String) = {
-    devDepInclude.isEmpty || devDepInclude.contains(name)
+    devDepInclude.isEmpty || devDepInclude.exists(_.contains(name))
   }
 }

@@ -12,9 +12,9 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
 {
   def no = new TrypId(id, depspec, path, sub, false)
 
-  def devBlocked = !Env.wantDevDep(id.name)
+  def devAllowed = Env.wantDevDep(id.name)
 
-  def development = Env.development && dev && !devBlocked
+  def development = Env.development && dev && devAllowed
 
   def dep = if(development) TrypId.empty else depspec
 
@@ -76,9 +76,13 @@ extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
 {
   def aRefs = super.projects
 
+  override def devAllowed = Env.wantDevDep(pkg)
+
   override def development = super.development && Env.trypDebug.isDefined
 
   override def no = copy(dev = false)
+
+  override def toString = s"PluginTrypId($org, $pkg)"
 
   def bintray(user: String, repo: String = "sbt-plugins", name: String = pkg) =
   {

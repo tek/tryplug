@@ -30,7 +30,7 @@ trait Tryplug
   )
 
   def commonBasicSettings: List[Setting[_]] = List(
-    (updateOptions := updateOptions.value.withCachedResolution(true))
+    updateOptions := updateOptions.value.withCachedResolution(true)
   ) ++ compilerSettings
 
   def trypSettings = commonBasicSettings ++ List(

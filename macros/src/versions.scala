@@ -128,7 +128,7 @@ trait Versions
   import scala.concurrent.ExecutionContext.Implicits.global
 
   def update(spec: PluginSpec)(implicit log: Logger) = {
-    log.info(s"checking version of ${spec.pkg} (${spec.current})")
+    log.debug(s"checking version of ${spec.pkg} (${spec.current})")
     if (spec.invalid)
       log.warn(s"invalid repo path '${spec.pkg}'")
     else {

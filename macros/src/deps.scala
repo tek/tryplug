@@ -207,9 +207,9 @@ trait Deps
   val scalazV = "7.2.+"
 
   // this dep cannot be made +, because specs2's versioning scheme is malicious
-  // there are releases with revision 3.6-201505... which pertain to the 3.6
-  // line yet register as newer than 3.6.x
-  val specsV = "3.6.+"
+  // there are releases with revision 3.7-201601... which pertain to the 3.7
+  // line yet register as newer than 3.7.x
+  val specsV = "3.7"
 
   val scalatestV = "2.2.+"
 

@@ -175,6 +175,7 @@ trait Deps
     new TrypId(TrypId.invalid, normal, path, sub.toList, true)
 
   def defaultResolvers = List(
+      Resolver.bintrayRepo("tek", "releases"),
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
       Resolver.sonatypeRepo("staging"),

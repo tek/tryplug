@@ -152,20 +152,30 @@ trait Versions
     }
   }
 
-  def projectDir: Option[File]
+  def projectDir: Option[File] = None
 
-  def versionDirs = projectDir.toList
+  val versionDirMap: Map[String, List[File]] = Map()
 
-  def handlePrefix = ""
+  def versionDirs(handle: String) =
+    versionDirMap.get(handle) | projectDir.toList
+
+  val handlePrefixMap: Map[File, String] = Map()
+
+  def defaultHandlePrefix = ""
+
+  def handlePrefix(dir: File, handle: String) = {
+    handlePrefixMap.get(dir) | defaultHandlePrefix
+  }
 
   def writeVersion(handle: String, version: String)(implicit log: Logger) =
   {
     def write(dir: File) = {
-      val content = s"""$handlePrefix$handle in Global := "$version""""
+      val prefix = handlePrefix(dir, handle)
+      val content = s"""$prefix$handle in Global := "$version""""
       val f = dir / s"$handle.sbt"
       IO.write(f, content)
     }
-    versionDirs map(write)
+    versionDirs(handle) map(write)
   }
 }
 
@@ -183,9 +193,13 @@ extends AutoPlugin
     autoUpdateVersions := false,
     projectDir := (baseDirectory in ThisBuild).value,
     updateVersions <<= updatePluginVersionsTask,
+    versionDirMap := Map(),
+    handlePrefixMap := Map(),
     versionUpdater := {
       new Versions {
-        def projectDir = Option(autoImport.projectDir.value)
+        override def projectDir = Option(autoImport.projectDir.value)
+        override val versionDirMap = autoImport.versionDirMap.value
+        override val handlePrefixMap = autoImport.handlePrefixMap.value
       }
     },
     update <<= update dependsOn Def.taskDyn {

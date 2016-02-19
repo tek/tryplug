@@ -72,23 +72,17 @@ trait Tryplug
       )
   }
 
-  def rootUpdater = {
-    VersionUpdateKeys.versionUpdater := {
-      new Versions {
-        def projectDir = None
-        override def versionDirs = {
-          val d = VersionUpdateKeys.projectDir.value
-          List(d, d / "project")
-        }
-      }
-    }
-  }
-
   def pluginProject(name: String) = {
+    import VersionUpdateKeys._
     pluginRoot(name)
       .settings(
-        VersionUpdateKeys.updateAllPlugins := true,
-        rootUpdater
+        updateAllPlugins := true,
+        versionDirMap ++= {
+          val d = projectDir.value
+          val dirs = List(d, d / "project")
+          Map("trypVersion" → dirs, "tryplugVersion" → dirs)
+        },
+        handlePrefixMap += ((projectDir.value / "project") → "P.")
       )
   }
 
@@ -134,8 +128,8 @@ trait Tryplug
     version: SettingKey[String], prefix: String = "") = Def.task {
       implicit val log = streams.value.log
       val updater = new Versions {
-        def projectDir = Some(baseDirectory.value / "project")
-        override def handlePrefix = prefix
+        override def projectDir = Some(baseDirectory.value / "project")
+        override def defaultHandlePrefix = prefix
       }
       updater.update(
         bintraySpec(user, repo, org, id, version))

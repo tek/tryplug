@@ -255,7 +255,7 @@ extends Deps
 
   def trypBuild =
     plugin(trypOrg, s"tryp-build", trypVersion, "tek/sbt-tryp",
-      List("build"))
+      List("core"))
         .bintray("tek")
 
   def tryp =

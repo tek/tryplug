@@ -241,17 +241,18 @@ extends Deps
 
   def androidName = "android"
   def trypOrg = "tryp.sbt"
-  val huy = "com.hanhuy.sbt"
-  val sdkName = "android-sdk-plugin"
-  val protifyName = "protify"
+  val huy = "org.scala-android"
+  val sdkName = "sbt-android"
+  val protifyName = "sbt-android-protify"
 
   def androidSdk =
-    plugin(huy, sdkName, sdkVersion, s"pfn/$sdkName")
+    plugin(huy, sdkName, sdkVersion, s"scala-android/$sdkName")
       .bintray("pfn")
 
   def protify =
-    plugin(huy, s"android-$protifyName", protifyVersion, s"pfn/$protifyName")
-      .bintray("pfn")
+    plugin(huy, s"android-$protifyName", protifyVersion,
+      s"scala-android/$protifyName")
+        .bintray("pfn")
 
   def trypBuild =
     plugin(trypOrg, s"tryp-build", trypVersion, "tek/sbt-tryp",

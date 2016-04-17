@@ -250,7 +250,7 @@ extends Deps
       .bintray("pfn")
 
   def protify =
-    plugin(huy, s"android-$protifyName", protifyVersion,
+    plugin(huy, s"$protifyName", protifyVersion,
       s"scala-android/$protifyName")
         .bintray("pfn")
 

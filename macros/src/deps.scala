@@ -222,13 +222,15 @@ trait Deps
   def commonTestIds = ids(
     "org.scalatest" %% "scalatest" % scalatestV,
     "org.specs2" %% "specs2-core" % specsV,
-    "org.specs2" %% "specs2-matcher-extra" % specsV
+    "org.specs2" %% "specs2-matcher-extra" % specsV,
+    "org.specs2" %% "specs2-scalacheck" % specsV
   )
 
   def commonTestIdsScoped = ids(
     "org.scalatest" %% "scalatest" % scalatestV % "test",
     "org.specs2" %% "specs2-core" % specsV % "test",
-    "org.specs2" %% "specs2-matcher-extra" % specsV % "test"
+    "org.specs2" %% "specs2-matcher-extra" % specsV % "test",
+    "org.specs2" %% "specs2-scalacheck" % specsV % "test"
   )
 
   def unit = commonTestIds

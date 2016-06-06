@@ -138,6 +138,9 @@ trait Versions
         case \/-(v) if Version(v) > Version(spec.current) ⇒
           writeVersion(spec.label, v)
           log.warn(s"updating version for ${spec.pkg}: ${spec.current} ⇒ $v")
+        case \/-(v) ⇒
+          log.debug(
+            s"version for ${spec.pkg} is up to date: $v <= ${spec.current}")
       }
     }
   }

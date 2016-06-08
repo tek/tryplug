@@ -43,7 +43,9 @@ extends Build
     .settings(
       name := "tryplug-macros",
       libraryDependencies ++= List(
-        "io.argonaut" %% "argonaut-scalaz" % "+",
+        "io.circe" %% "circe-core" % "+",
+        "io.circe" %% "circe-parser" % "+",
+        "io.circe" %% "circe-generic" % "+",
         "me.lessis" %% "semverfi" % "+",
         "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
         "org.scalaz" %% "scalaz-concurrent" % "7.1.+"

@@ -6,7 +6,12 @@ import java.net.URL
 
 import scala.concurrent.Future
 
-import argonaut._, Argonaut._, ArgonautScalaz._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+
+import cats.data.Xor
 
 import scalaz._, Scalaz._, concurrent.Task
 
@@ -67,17 +72,12 @@ extends VersionApi
 {
   case class PackageInfo(name: String, version: String, versions: List[String])
 
-  implicit def packageInfoCodecJson: CodecJson[PackageInfo] =
-    casecodec3(PackageInfo.apply, PackageInfo.unapply)("name",
-      "latest_version", "versions")
-
   def latestRemote = {
-    val response = request(mkUrl(spec.user, spec.repo, spec.pkg))
-    response
-      .map(_.decodeEither[PackageInfo])
+    request(mkUrl(spec.user, spec.repo, spec.pkg))
+      .map(decode[PackageInfo])
       .map {
-          case Right(PackageInfo(_, v, _)) ⇒ v
-          case Left(t) ⇒
+          case Xor.Right(PackageInfo(_, v, _)) ⇒ v
+          case Xor.Left(t) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $t")
             "0"
       }
@@ -91,30 +91,19 @@ extends VersionApi
 case class MavenApi(spec: MavenPluginSpec)(implicit log: Logger)
 extends VersionApi
 {
+  case class Pkg(latestVersion: String)
+  case class Response(docs: List[Pkg])
+  case class Payload(response: Response)
+
   def latestRemote = {
     request(mkUrl(spec.org, spec.pkg))
-      .map(parseResponse)
+      .map(decode[Payload])
       .map {
-          case Right(v) ⇒ v
-          case Left(err) ⇒
-            log.error(s"invalid version info for ${spec.pkg}: $err")
+          case Xor.Right(Payload(Response(Pkg(v) :: _))) ⇒ v
+          case t ⇒
+            log.error(s"invalid version info for ${spec.pkg}: $t")
             "0"
       }
-  }
-
-  lazy val lens = jObjectPL >=>
-    jsonObjectPL("response") >=>
-    jObjectPL >=>
-    jsonObjectPL("docs") >=>
-    jArrayPL >=>
-    jsonArrayPL(0) >=>
-    jObjectPL >=>
-    jsonObjectPL("latestVersion") >=>
-    jStringPL
-
-  def parseResponse(response: String) = {
-    argonaut.Parse.parse(response)
-      .flatMap { a ⇒ lens.get(a).toRight(s"invalid json: $a") }
   }
 
   def mkUrl(org: String, pkg: String) = {

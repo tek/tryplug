@@ -272,6 +272,11 @@ extends Deps
     plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
       List("tryplug", "macros"))
         .bintray("tek")
+
+  def coursier =
+    plugin("io.get-coursier", "sbt-coursier", coursierVersion,
+      "alexarchambault/coursier")
+        .maven
 }
 
 object NoDeps

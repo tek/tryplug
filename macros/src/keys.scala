@@ -10,6 +10,7 @@ object TrypKeys
   val tryplugVersion = settingKey[String]("tryplug version") in Tryp
   val sdkVersion = settingKey[String]("android-sdk-plugin version") in Tryp
   val protifyVersion = settingKey[String]("protify version") in Tryp
+  val coursierVersion = settingKey[String]("coursier version") in Tryp
 }
 
 import TrypKeys.Tryp

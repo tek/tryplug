@@ -13,6 +13,7 @@ extends AutoPlugin
   {
     def protifyVersion = TrypKeys.protifyVersion
     def sdkVersion = TrypKeys.sdkVersion
+    def coursierVersion = TrypKeys.coursierVersion
   }
 }
 
@@ -27,6 +28,7 @@ with Tryplug
   object autoImport
   {
     def debugDeps = userLevelDebugDeps
+    def useCoursier = TrypKeys.useCoursier
   }
 
   def userLevelName = "user-level"
@@ -36,13 +38,20 @@ with Tryplug
     bintrayTekResolver,
     publishTo := None,
     bintrayPluginResolver("pfn"),
-    addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2")
+    addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2"),
+    useCoursier := false
   ) ++ trypPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 
   def userLevelDebugDeps = {
     Project(userLevelName, file("."))
       .settings(pluginVersionDefaults: _*)
+  }
+
+  override object deps
+  extends PluginDeps
+  {
+    override def deps = super.deps ++ Map(userLevelName -> ids(coursier))
   }
 }
 

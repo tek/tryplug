@@ -288,7 +288,7 @@ extends Deps
 
   def coursier =
     plugin("io.get-coursier", "sbt-coursier", coursierVersion,
-      "alexarchambault/coursier")
+      "alexarchambault/coursier", cond = Some(useCoursier))
         .maven
 }
 

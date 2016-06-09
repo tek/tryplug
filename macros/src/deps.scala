@@ -8,15 +8,21 @@ import sbt.Keys._
 import Types._
 
 class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
-  sub: List[String], dev: Boolean)
+  sub: List[String], dev: Boolean, hook: DepCond,
+  cond: Option[SettingKey[Boolean]])
 {
-  def no = new TrypId(id, depspec, path, sub, false)
+  def no = new TrypId(id, depspec, path, sub, false, identity, None)
 
   def devAllowed = Env.wantDevDep(id.name)
 
   def development = Env.development && dev && devAllowed
 
-  def dep = if(development) TrypId.empty else depspec
+  def dep = {
+    if(development) TrypId.empty else {
+      val ds = hook(depspec)
+      cond.map(a => TrypId.cond(ds, a)).getOrElse(ds)
+    }
+  }
 
   def projects = {
     if (sub.isEmpty) List(RootProject(Env.localProject(path)))
@@ -40,9 +46,17 @@ object TrypId
 {
   def empty = libraryDependencies ++= List()
 
-  def plain(depspec: DepSpec) = new TrypId(invalid, depspec, "", List(), false)
+  def default(id: ModuleID, depspec: DepSpec) =
+    new TrypId(id, depspec, "", List(), false, identity, None)
+
+  def plain(depspec: DepSpec) =
+    default(invalid, depspec)
 
   def invalid = "invalid" % "invaild" % "1"
+
+  def cond(ds: DepSpec, c: SettingKey[Boolean]) = {
+    libraryDependencies ++= { if(c.value) ds.init.value else List() }
+  }
 }
 
 trait PluginSpec
@@ -69,10 +83,11 @@ extends PluginSpec
 }
 
 case class PluginTrypId(org: String, pkg: String, version: SettingKey[String],
-  path: String, sub: List[String], dev: Boolean = true,
-  pspec: Option[Setting[Seq[PluginSpec]]] = None)
+  path: String, sub: List[String], dev: Boolean,
+  pspec: Option[Setting[Seq[PluginSpec]]], hook: DepCond,
+  cond: Option[SettingKey[Boolean]])
 extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
-  path, sub, dev)
+  path, sub, dev, hook, cond)
 {
   def aRefs = super.projects
 
@@ -89,16 +104,16 @@ extends TrypId(TrypId.invalid, PluginTrypId.pluginDep(org, pkg, version),
     new PluginTrypId(org, pkg, version, path, sub, dev,
       Some(VersionUpdateKeys.versions +=
         BintrayPluginSpec(user, repo, org, name, version.key.label,
-          version.value)
-      )
+          version.value)),
+      hook, cond
     )
   }
 
   def maven = {
     new PluginTrypId(org, pkg, version, path, sub, dev,
       Some(VersionUpdateKeys.versions +=
-        MavenPluginSpec(org, pkg, version.key.label, version.value)
-      )
+        MavenPluginSpec(org, pkg, version.key.label, version.value)),
+      hook, cond
     )
   }
 }
@@ -121,7 +136,8 @@ object Deps
     import c.universe._
     c.Expr[TrypId] {
       q"""new tryp.TrypId(
-        $id, libraryDependencies += $id, $path, List(..$sub), true
+        $id, libraryDependencies += $id, $path, List(..$sub), true, identity,
+        None
       )
       """
     }
@@ -151,7 +167,7 @@ extends ToModuleIDOps
 trait Deps
 {
   implicit def moduleIDtoTrypId(id: ModuleID) =
-    new TrypId(id, libraryDependencies += id, "", List(), false)
+    TrypId.default(id, libraryDependencies += id)
 
   implicit class MapOps[A, B](m: Map[A, _ <: Seq[B]]) {
     def fetch(key: A) = m.get(key).toList.flatten
@@ -168,11 +184,12 @@ trait Deps
   def d(id: ModuleID) = macro Deps.dImpl
 
   def plugin(org: String, pkg: String, version: SettingKey[String],
-    github: String, sub: List[String] = List()) =
-      PluginTrypId(org, pkg, version, github, sub)
+    github: String, sub: List[String] = List(), hook: DepCond = identity,
+    cond: Option[SettingKey[Boolean]] = None) =
+      PluginTrypId(org, pkg, version, github, sub, true, None, hook, cond)
 
   def manualDd(normal: DepSpec, path: String, sub: String*) =
-    new TrypId(TrypId.invalid, normal, path, sub.toList, true)
+    new TrypId(TrypId.invalid, normal, path, sub.toList, true, identity, None)
 
   def defaultResolvers = List(
       Resolver.bintrayRepo("tek", "releases"),

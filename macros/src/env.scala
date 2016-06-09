@@ -9,6 +9,7 @@ object Types
   type DepSpec = Setting[Seq[ModuleID]]
   type Setts = List[Setting[_]]
   type SbtDep = ClasspathDep[ProjectReference]
+  type DepCond = DepSpec => DepSpec
 }
 import Types._
 

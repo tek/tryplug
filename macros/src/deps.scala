@@ -179,6 +179,11 @@ trait Deps
     "unit" → unit
   )
 
+  def allDeps = deps ++ ReflectUtilities.allVals[List[TrypId]](this)
+
+  def resolveDeps(name: String) =
+    allDeps.fetch(name)
+
   def dd(id: ModuleID, path: String, sub: String*) = macro Deps.ddImpl
 
   def d(id: ModuleID) = macro Deps.dImpl
@@ -206,20 +211,20 @@ trait Deps
   // if env is development, devdeps return empty settings
   def apply(name: String): Setts = {
     List(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++
-      (common ++ deps.fetch(name)).map(_.dep)
+      resolveDeps(name).map(_.dep)
   }
 
   // ProjectRef instances for each devdep's subprojects
   // if env isn't development, nothing is returned
   def refs(name: String) = {
-    (common ++ deps.fetch(name)) flatMap(_.refs)
+    resolveDeps(name) flatMap(_.refs)
   }
 
   // PluginSpec instance for each dep
   def pluginVersions(name: String) = {
-    deps fetch(name) collect {
-      case i: PluginTrypId ⇒ i.pspec
-    } flatten
+    resolveDeps(name)
+      .collect { case i: PluginTrypId ⇒ i.pspec }
+      .flatten
   }
 
   val scalazV = "7.2.+"

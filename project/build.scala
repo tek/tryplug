@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 
+import ScriptedPlugin._
+
 object TryplugBuild
 extends Build
 {
@@ -11,6 +13,7 @@ extends Build
 
   lazy val common = List(
     scalaSource in Compile := baseDirectory.value / "src",
+    scalaSource in Test := baseDirectory.value / "test-src",
     sbtPlugin := true,
     publishMavenStyle := false,
     publishArtifact in (Compile, packageDoc) := false,
@@ -52,4 +55,20 @@ extends Build
       addCompilerPlugin(
         "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.full)
       )
+
+  lazy val scripted = (project in file("scripted"))
+    .settings(scriptedSettings: _*)
+    .settings(
+      resolvers += Resolver.typesafeIvyRepo("releases"),
+      sbtTestDirectory := baseDirectory.value / "test",
+      scriptedRun <<=
+        scriptedRun dependsOn(publishLocal in macros, publishLocal in tryplug),
+      scriptedBufferLog := false,
+      scriptedLaunchOpts ++= Seq(
+        "-Xmx2048m",
+        "-XX:MaxPermSize=1024m",
+        s"-Dtryp.projectsdir=${baseDirectory.value / "meta"}",
+        s"-Dtryplug.version=${version.value}"
+      )
+    )
 }

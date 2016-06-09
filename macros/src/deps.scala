@@ -227,19 +227,12 @@ trait Deps
       .flatten
   }
 
-  val scalazV = "7.2.+"
-
   // this dep cannot be made +, because specs2's versioning scheme is malicious
   // there are releases with revision 3.7-201601... which pertain to the 3.7
   // line yet register as newer than 3.7.x
   val specsV = "3.7.3"
 
   val scalatestV = "2.2.+"
-
-  def common = ids(
-    "org.scalaz" %% "scalaz-concurrent" % scalazV,
-    "org.scalaz.stream" %% "scalaz-stream" % "+"
-  )
 
   def commonTestIds = ids(
     "org.scalatest" %% "scalatest" % scalatestV,
@@ -261,8 +254,6 @@ trait Deps
 trait PluginDeps
 extends Deps
 {
-  override val scalazV = "7.1.+"
-
   import TrypKeys._
 
   def androidName = "android"

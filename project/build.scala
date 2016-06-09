@@ -20,7 +20,6 @@ extends Build
       "-deprecation",
       "-unchecked",
       "-language:implicitConversions",
-      "-language:postfixOps",
       "-language:reflectiveCalls",
       "-language:experimental.macros",
       "-language:existentials",

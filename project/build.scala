@@ -45,10 +45,10 @@ extends Build
     .settings(
       name := "tryplug-macros",
       libraryDependencies ++= List(
-        "io.circe" %% "circe-core" % "+",
-        "io.circe" %% "circe-parser" % "+",
-        "io.circe" %% "circe-generic" % "+",
-        "me.lessis" %% "semverfi" % "+",
+        "io.circe" %% "circe-core" % "0.+",
+        "io.circe" %% "circe-parser" % "0.+",
+        "io.circe" %% "circe-generic" % "0.+",
+        "me.lessis" %% "semverfi" % "0.+",
         "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
         "org.scalaz" %% "scalaz-concurrent" % "7.1.+"
       ),

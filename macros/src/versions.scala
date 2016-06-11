@@ -78,7 +78,7 @@ extends VersionApi
       .map {
           case version(v) => v
           case Xor.Left(t) ⇒
-            log.error(s"invalid version info for ${spec.pkg}: $t")
+            log.error(s"invalid bintray version info for ${spec.pkg}: $t")
             "0"
       }
   }
@@ -100,7 +100,8 @@ object BintrayApi
     }
   }
 
-  case class PackageInfo(name: String, version: String, versions: List[String])
+  case class PackageInfo(name: String, latest_version: String,
+    versions: List[String])
 }
 
 case class MavenApi(spec: MavenPluginSpec)(implicit log: Logger)
@@ -116,7 +117,7 @@ extends VersionApi
       .map {
           case Xor.Right(Payload(Response(Pkg(v) :: _))) ⇒ v
           case t ⇒
-            log.error(s"invalid version info for ${spec.pkg}: $t")
+            log.error(s"invalid maven version info for ${spec.pkg}: $t")
             "0"
       }
   }

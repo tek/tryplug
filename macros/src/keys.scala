@@ -27,7 +27,8 @@ object VersionUpdateKeys
     settingKey[Boolean]("update plugin versions when updating dependencies")
       .in(Tryp)
   val versionUpdater =
-    settingKey[Versions]("Versions instance used for updating plugins") in Tryp
+    settingKey[Logger => Versions](
+      "Versions instance used for updating plugins") in Tryp
   val updateAllPlugins =
     settingKey[Boolean]("update all versions by default") in Tryp
   val updatePluginsInclude =

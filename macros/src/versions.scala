@@ -70,13 +70,13 @@ extends VersionApi
 case class BintrayApi(spec: BintrayPluginSpec)(implicit log: Logger)
 extends VersionApi
 {
-  case class PackageInfo(name: String, version: String, versions: List[String])
+  import BintrayApi._
 
   def latestRemote = {
     request(mkUrl(spec.user, spec.repo, spec.pkg))
       .map(decode[PackageInfo])
       .map {
-          case Xor.Right(PackageInfo(_, v, _)) ⇒ v
+          case version(v) => v
           case Xor.Left(t) ⇒
             log.error(s"invalid version info for ${spec.pkg}: $t")
             "0"
@@ -86,6 +86,21 @@ extends VersionApi
   def mkUrl(user: String, repo: String, pkg: String) = {
     new URL(s"https://api.bintray.com/packages/$user/$repo/$pkg")
   }
+}
+
+object BintrayApi
+{
+  object version
+  {
+    def unapply(a: Throwable Xor PackageInfo) = {
+      a match {
+        case Xor.Right(PackageInfo(_, v, _)) ⇒ Some(v)
+        case _ => None
+      }
+    }
+  }
+
+  case class PackageInfo(name: String, version: String, versions: List[String])
 }
 
 case class MavenApi(spec: MavenPluginSpec)(implicit log: Logger)
@@ -116,25 +131,42 @@ trait Versions
 {
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  def update(spec: PluginSpec)(implicit log: Logger) = {
-    log.debug(s"checking version of ${spec.pkg} (${spec.current})")
-    if (spec.invalid)
-      log.warn(s"invalid repo path '${spec.pkg}'")
-    else {
-      api(spec).latest.runAsync {
+  implicit def log: Logger
+
+  def update(spec: PluginSpec) = {
+    updateTask(spec)
+      .runAsync {
         case -\/(t) ⇒
           log.error(s"failed to fetch version for ${spec.pkg}: $t")
-        case \/-(v) if Version(v) > Version(spec.current) ⇒
-          writeVersion(spec.label, v)
-          log.warn(s"updating version for ${spec.pkg}: ${spec.current} ⇒ $v")
-        case \/-(v) ⇒
-          log.debug(
-            s"version for ${spec.pkg} is up to date: $v <= ${spec.current}")
+        case _ =>
       }
+  }
+
+  def updateTask(spec: PluginSpec): Task[SemVersion] = {
+    log.debug(s"checking version of ${spec.pkg} (${spec.current})")
+    if (spec.invalid) {
+      log.warn(s"invalid repo path '${spec.pkg}'")
+      Task(Invalid("invalid repo path"))
+    }
+    else {
+      api(spec).latest
+        .map(Version(_))
+        .map { v =>
+          if (v > Version(spec.current)) {
+            writeVersion(spec.label, v.toString)
+            log.warn(s"updating version for ${spec.pkg}: ${spec.current} ⇒ $v")
+            v
+          }
+          else {
+            log.debug(
+              s"version for ${spec.pkg} is up to date: $v <= ${spec.current}")
+            Invalid("up to date")
+          }
+        }
     }
   }
 
-  def api(spec: PluginSpec)(implicit log: Logger) = {
+  def api(spec: PluginSpec) = {
     spec match {
       case s: BintrayPluginSpec ⇒ BintrayApi(s)
       case s: MavenPluginSpec ⇒ MavenApi(s)
@@ -159,7 +191,7 @@ trait Versions
     handlePrefixMap.get(dir) | defaultHandlePrefix
   }
 
-  def writeVersion(handle: String, version: String)(implicit log: Logger) =
+  def writeVersion(handle: String, version: String) =
   {
     def write(dir: File) = {
       val prefix = handlePrefix(dir, handle)
@@ -187,8 +219,9 @@ extends AutoPlugin
     updateVersions <<= updatePluginVersionsTask,
     versionDirMap := Map(),
     handlePrefixMap := Map(),
-    versionUpdater := {
+    versionUpdater := { l =>
       new Versions {
+        def log = l
         override def projectDir = Option(autoImport.projectDir.value)
         override val versionDirMap = autoImport.versionDirMap.value
         override val handlePrefixMap = autoImport.handlePrefixMap.value
@@ -204,9 +237,8 @@ extends AutoPlugin
   )
 
   val updatePluginVersionsTask = Def.task {
-    implicit val log = streams.value.log
     if (!sys.env.get("TRYP_SBT_DISABLE_VERSION_UPDATE").isDefined) {
-      val updater = versionUpdater.value
+      val updater = versionUpdater.value(streams.value.log)
       val wanted =
         if (updateAllPlugins.value) versions.value
         else versions.value.filter(

@@ -127,8 +127,8 @@ trait Tryplug
 
   def projectUpdater(user: String, repo: String, org: String, id: String,
     version: SettingKey[String], prefix: String = "") = Def.task {
-      implicit val log = streams.value.log
       val updater = new Versions {
+        val log = streams.value.log
         override def projectDir = Some(baseDirectory.value / "project")
         override def defaultHandlePrefix = prefix
       }

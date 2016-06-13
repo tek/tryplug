@@ -25,11 +25,11 @@ trait VersionApi
   def spec: PluginSpec
 
   def latest = for {
-    local ← latestLocal
-    remote ← latestRemote
+    local <- latestLocal
+    remote <- latestRemote
   } yield((Version(local) > Version(remote)) ? local | remote)
 
-  val localRepo = sys.env.get("HOME").map(h ⇒ new File(h) / ".ivy2" / "local")
+  val localRepo = sys.env.get("HOME").map(h => new File(h) / ".ivy2" / "local")
 
   def latestLocal = {
     Task {
@@ -47,7 +47,7 @@ trait VersionApi
   def request(url: URL) = {
     Task {
       url.openConnection()
-      Using.urlReader(IO.utf8)(url) { in ⇒
+      Using.urlReader(IO.utf8)(url) { in =>
         val sw = new StringWriter
         val buf = Array.ofDim[Char](8192)
         Stream.continually(in.read(buf, 0, 8192))
@@ -77,7 +77,7 @@ extends VersionApi
       .map(decode[PackageInfo])
       .map {
           case version(v) => v
-          case Xor.Left(t) ⇒
+          case Xor.Left(t) =>
             log.error(s"invalid bintray version info for ${spec.pkg}: $t")
             "0"
       }
@@ -94,7 +94,7 @@ object BintrayApi
   {
     def unapply(a: Throwable Xor PackageInfo) = {
       a match {
-        case Xor.Right(PackageInfo(_, v, _)) ⇒ Some(v)
+        case Xor.Right(PackageInfo(_, v, _)) => Some(v)
         case _ => None
       }
     }
@@ -115,8 +115,8 @@ extends VersionApi
     request(mkUrl(spec.org, spec.pkg))
       .map(decode[Payload])
       .map {
-          case Xor.Right(Payload(Response(Pkg(v) :: _))) ⇒ v
-          case t ⇒
+          case Xor.Right(Payload(Response(Pkg(v) :: _))) => v
+          case t =>
             log.error(s"invalid maven version info for ${spec.pkg}: $t")
             "0"
       }
@@ -137,7 +137,7 @@ trait Versions
   def update(spec: PluginSpec) = {
     updateTask(spec)
       .runAsync {
-        case -\/(t) ⇒
+        case -\/(t) =>
           log.error(s"failed to fetch version for ${spec.pkg}: $t")
         case _ =>
       }
@@ -155,7 +155,7 @@ trait Versions
         .map { v =>
           if (v > Version(spec.current)) {
             writeVersion(spec.label, v.toString)
-            log.warn(s"updating version for ${spec.pkg}: ${spec.current} ⇒ $v")
+            log.warn(s"updating version for ${spec.pkg}: ${spec.current} => $v")
             v
           }
           else {
@@ -169,9 +169,9 @@ trait Versions
 
   def api(spec: PluginSpec) = {
     spec match {
-      case s: BintrayPluginSpec ⇒ BintrayApi(s)
-      case s: MavenPluginSpec ⇒ MavenApi(s)
-      case _ ⇒
+      case s: BintrayPluginSpec => BintrayApi(s)
+      case s: MavenPluginSpec => MavenApi(s)
+      case _ =>
         log.error(s"invalid plugin spec for version update: $spec")
         NopApi(spec)
     }
@@ -243,9 +243,9 @@ extends AutoPlugin
       val wanted =
         if (updateAllPlugins.value) versions.value
         else versions.value.filter(
-          a ⇒ updatePluginsInclude.value.contains(a.pkg))
+          a => updatePluginsInclude.value.contains(a.pkg))
       wanted
-        .filterNot(a ⇒ updatePluginsExclude.value.contains(a.pkg))
+        .filterNot(a => updatePluginsExclude.value.contains(a.pkg))
         .foreach(updater.update)
     }
   }

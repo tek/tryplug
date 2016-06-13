@@ -82,9 +82,9 @@ trait Tryplug
         versionDirMap ++= {
           val d = projectDir.value
           val dirs = List(d, d / "project")
-          Map("trypVersion" → dirs, "tryplugVersion" → dirs)
+          Map("trypVersion" -> dirs, "tryplugVersion" -> dirs)
         },
-        handlePrefixMap += ((projectDir.value / "project") → "P.")
+        handlePrefixMap += ((projectDir.value / "project") -> "P.")
       )
   }
 
@@ -104,7 +104,7 @@ trait Tryplug
     propVersion(coursierVersion, "coursier", "1.0.0-M12")
   )
 
-  val homeDir = sys.env.get("HOME").map(d ⇒ new File(d))
+  val homeDir = sys.env.get("HOME").map(d => new File(d))
 
   def bintrayPluginResolver(name: String) = {
     val u = url(s"https://dl.bintray.com/$name/sbt-plugins")

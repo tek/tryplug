@@ -101,7 +101,7 @@ extends $base("$name")
 
   def genCommand(cmd: String, dep: String, base: String, plug: String,
     buildHelper: String) =
-    Command.command(s"gen-$cmd") { state ⇒
+    Command.command(s"gen-$cmd") { state =>
       val extracted = sbt.Project.extract(state)
       import extracted._
       val pro = get(baseDirectory) / "project"

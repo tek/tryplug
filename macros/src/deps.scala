@@ -26,11 +26,11 @@ class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
 
   def projects = {
     if (sub.isEmpty) List(RootProject(Env.localProject(path)))
-    else sub map { n ⇒ ProjectRef(Env.localProject(path), n) }
+    else sub map { n => ProjectRef(Env.localProject(path), n) }
   }
 
   def refs = {
-    if (development) projects.map(a ⇒ a: SbtDep)
+    if (development) projects.map(a => a: SbtDep)
     else List()
   }
 
@@ -176,7 +176,7 @@ trait Deps
   def ids(i: TrypId*) = List[TrypId](i: _*)
 
   def deps: Map[String, List[TrypId]] = Map(
-    "unit" → unit
+    "unit" -> unit
   )
 
   def allDeps = deps ++ ReflectUtilities.allVals[List[TrypId]](this)
@@ -223,7 +223,7 @@ trait Deps
   // PluginSpec instance for each dep
   def pluginVersions(name: String) = {
     resolveDeps(name)
-      .collect { case i: PluginTrypId ⇒ i.pspec }
+      .collect { case i: PluginTrypId => i.pspec }
       .flatten
   }
 

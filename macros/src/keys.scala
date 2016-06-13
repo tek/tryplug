@@ -37,7 +37,7 @@ object VersionUpdateKeys
     settingKey[List[String]]("which plugins' versions not to update") in Tryp
   val versionDirMap =
     settingKey[Map[String, List[File]]](
-      "settingKey → directories for version updates") in Tryp
+      "settingKey -> directories for version updates") in Tryp
   val handlePrefixMap =
-    settingKey[Map[File, String]]("dir → prefix for version updates") in Tryp
+    settingKey[Map[File, String]]("dir -> prefix for version updates") in Tryp
 }

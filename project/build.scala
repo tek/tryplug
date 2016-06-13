@@ -18,6 +18,11 @@ extends Build
     publishMavenStyle := false,
     publishArtifact in (Compile, packageDoc) := false,
     publishArtifact in (Compile, packageSrc) := false,
+    resolvers ++= List(
+      Resolver.sonatypeRepo("snapshots"),
+      Resolver.sonatypeRepo("releases"),
+      Resolver.bintrayRepo("scalaz", "releases")
+    ),
     scalacOptions ++= List(
       "-feature",
       "-deprecation",
@@ -34,7 +39,6 @@ extends Build
     .settings(common: _*)
     .settings(
       name := "tryplug",
-      resolvers += Resolver.sonatypeRepo("snapshots"),
       addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
     )
     .aggregate(macros)
@@ -53,6 +57,9 @@ extends Build
         "org.scalaz" %% "scalaz-concurrent" % "7.1.+",
         "org.specs2" %% "specs2-core" % "3.6.+" % "test",
         "org.specs2" %% "specs2-matcher-extra" % "3.6.+" % "test"
+      ),
+      addCompilerPlugin(
+        "org.spire-math" % "kind-projector" % "0.+" cross CrossVersion.binary
       ),
       addCompilerPlugin(
         "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.full)

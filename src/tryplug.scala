@@ -41,7 +41,6 @@ trait Tryplug
 
   def trypPluginSettings = commonBasicSettings ++ List(
     organization := "tryp.sbt",
-    addCompilerPlugin("fail.sauce" %% "commas" % "0.1.1-SNAPSHOT"),
     sbtPlugin := true,
     scalaSource in Compile := baseDirectory.value / "src",
     licenses += ("MIT", url("http://opensource.org/licenses/MIT")),

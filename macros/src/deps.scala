@@ -175,9 +175,7 @@ trait Deps
 
   def ids(i: TrypId*) = List[TrypId](i: _*)
 
-  def deps: Map[String, List[TrypId]] = Map(
-    "unit" -> unit
-  )
+  def deps: Map[String, List[TrypId]] = Map()
 
   def allDeps = deps ++ ReflectUtilities.allVals[List[TrypId]](this)
 
@@ -226,29 +224,6 @@ trait Deps
       .collect { case i: PluginTrypId => i.pspec }
       .flatten
   }
-
-  // this dep cannot be made +, because specs2's versioning scheme is malicious
-  // there are releases with revision 3.7-201601... which pertain to the 3.7
-  // line yet register as newer than 3.7.x
-  val specsV = "3.7.3"
-
-  val scalatestV = "2.2.+"
-
-  def commonTestIds = ids(
-    "org.scalatest" %% "scalatest" % scalatestV,
-    "org.specs2" %% "specs2-core" % specsV,
-    "org.specs2" %% "specs2-matcher-extra" % specsV,
-    "org.specs2" %% "specs2-scalacheck" % specsV
-  )
-
-  def commonTestIdsScoped = ids(
-    "org.scalatest" %% "scalatest" % scalatestV % "test",
-    "org.specs2" %% "specs2-core" % specsV % "test",
-    "org.specs2" %% "specs2-matcher-extra" % specsV % "test",
-    "org.specs2" %% "specs2-scalacheck" % specsV % "test"
-  )
-
-  def unit = commonTestIds
 }
 
 trait PluginDeps

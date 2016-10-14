@@ -58,8 +58,9 @@ extends Build
         "org.specs2" %% "specs2-core" % "3.6.+" % "test",
         "org.specs2" %% "specs2-matcher-extra" % "3.6.+" % "test"
       ),
+      addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M14"),
       addCompilerPlugin(
-        "org.spire-math" % "kind-projector" % "0.+" cross CrossVersion.binary
+        "org.spire-math" % "kind-projector" % "0.9.0" cross CrossVersion.binary
       ),
       addCompilerPlugin(
         "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.full)

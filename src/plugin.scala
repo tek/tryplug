@@ -3,8 +3,6 @@ package tryp
 import sbt._
 import Keys._
 
-import coursier.Keys._
-
 object GlobalKeysPlug
 extends AutoPlugin
 {
@@ -40,9 +38,7 @@ with Tryplug
     bintrayTekResolver,
     publishTo := None,
     bintrayPluginResolver("pfn"),
-    addSbtPlugin("com.hanhuy.sbt" % "key-path" % "0.2"),
-    useCoursier := false,
-    coursierUseSbtCredentials := true
+    useCoursier := false
   ) ++ trypPluginSettings ++ deps(userLevelName) ++
     deps.pluginVersions(userLevelName)
 

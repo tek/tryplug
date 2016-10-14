@@ -55,8 +55,8 @@ extends Build
         "me.lessis" %% "semverfi" % "0.+",
         "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
         "org.scalaz" %% "scalaz-concurrent" % "7.1.+",
-        "org.specs2" %% "specs2-core" % "3.6.+" % "test",
-        "org.specs2" %% "specs2-matcher-extra" % "3.6.+" % "test"
+        "org.specs2" %% "specs2-core" % "3.8.+" % "test",
+        "org.specs2" %% "specs2-matcher-extra" % "3.8.+" % "test"
       ),
       addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M14"),
       addCompilerPlugin(

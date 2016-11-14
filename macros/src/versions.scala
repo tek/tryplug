@@ -5,15 +5,13 @@ import java.nio.charset.Charset
 import java.net.URL
 
 import scala.concurrent.Future
+import scala.util.Failure
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
-
-import cats.data.Xor
-
-import scalaz._, Scalaz._, concurrent.Task
 
 import semverfi._
 
@@ -27,12 +25,12 @@ trait VersionApi
   def latest = for {
     local <- latestLocal
     remote <- latestRemote
-  } yield((Version(local) > Version(remote)) ? local | remote)
+  } yield(if (Version(local) > Version(remote)) local else remote)
 
   val localRepo = sys.env.get("HOME").map(h => new File(h) / ".ivy2" / "local")
 
   def latestLocal = {
-    Task {
+    Future {
       localRepo
         .map(_ / spec.org / spec.pkg / "scala_2.10" / "sbt_0.13" * "*")
         .map(_.get.map(_.getName.toString))
@@ -42,10 +40,10 @@ trait VersionApi
     }
   }
 
-  def latestRemote: Task[String]
+  def latestRemote: Future[String]
 
   def request(url: URL) = {
-    Task {
+    Future {
       url.openConnection()
       Using.urlReader(IO.utf8)(url) { in =>
         val sw = new StringWriter
@@ -63,7 +61,7 @@ case class NopApi(spec: PluginSpec)(implicit log: Logger)
 extends VersionApi
 {
   def latestRemote = {
-    Task("0")
+    Future("0")
   }
 }
 
@@ -77,7 +75,7 @@ extends VersionApi
       .map(decode[PackageInfo])
       .map {
           case version(v) => v
-          case Xor.Left(t) =>
+          case Left(t) =>
             log.error(s"invalid bintray version info for ${spec.pkg}: $t")
             "0"
       }
@@ -92,9 +90,9 @@ object BintrayApi
 {
   object version
   {
-    def unapply(a: Throwable Xor PackageInfo) = {
+    def unapply(a: Throwable Either PackageInfo) = {
       a match {
-        case Xor.Right(PackageInfo(_, v, _)) => Some(v)
+        case Right(PackageInfo(_, v, _)) => Some(v)
         case _ => None
       }
     }
@@ -115,7 +113,7 @@ extends VersionApi
     request(mkUrl(spec.org, spec.pkg))
       .map(decode[Payload])
       .map {
-          case Xor.Right(Payload(Response(Pkg(v) :: _))) => v
+          case Right(Payload(Response(Pkg(v) :: _))) => v
           case t =>
             log.error(s"invalid maven version info for ${spec.pkg}: $t")
             "0"
@@ -135,19 +133,19 @@ trait Versions
   implicit def log: Logger
 
   def update(spec: PluginSpec) = {
-    updateTask(spec)
-      .runAsync {
-        case -\/(t) =>
+    updateFuture(spec)
+      .onComplete {
+        case Failure(t) =>
           log.error(s"failed to fetch version for ${spec.pkg}: $t")
         case _ =>
       }
   }
 
-  def updateTask(spec: PluginSpec): Task[SemVersion] = {
+  def updateFuture(spec: PluginSpec): Future[SemVersion] = {
     log.debug(s"checking version of ${spec.pkg} (${spec.current})")
     if (spec.invalid) {
       log.warn(s"invalid repo path '${spec.pkg}'")
-      Task(Invalid("invalid repo path"))
+      Future(Invalid("invalid repo path"))
     }
     else {
       api(spec).latest
@@ -182,14 +180,14 @@ trait Versions
   val versionDirMap: Map[String, List[File]] = Map()
 
   def versionDirs(handle: String) =
-    versionDirMap.get(handle) | projectDir.toList
+    versionDirMap.get(handle) getOrElse projectDir.toList
 
   val handlePrefixMap: Map[File, String] = Map()
 
   def defaultHandlePrefix = ""
 
   def handlePrefix(dir: File, handle: String) = {
-    handlePrefixMap.get(dir) | defaultHandlePrefix
+    handlePrefixMap.get(dir) getOrElse defaultHandlePrefix
   }
 
   def writeVersion(handle: String, version: String) =

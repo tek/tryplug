@@ -1,7 +1,5 @@
 package tryp
 
-import scalaz._, Scalaz._
-
 import sbt._
 
 object Types

@@ -30,7 +30,7 @@ with Tryplug
 
   lazy val root = pluginRoot("root")
     .settings(
-      TaskKey[Unit]("testDep") <<= testDep
+      TaskKey[Unit]("testDep") := testDep.value
     )
 
   def positive(d: DepSpec): DepSpec = {

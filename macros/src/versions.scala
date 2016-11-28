@@ -215,7 +215,7 @@ extends AutoPlugin
     versions := Nil,
     autoUpdateVersions := false,
     projectDir := (baseDirectory in ThisBuild).value,
-    updateVersions <<= updatePluginVersionsTask,
+    updateVersions := updatePluginVersionsTask.value,
     versionDirMap := Map(),
     handlePrefixMap := Map(),
     versionUpdater := { l =>
@@ -226,10 +226,10 @@ extends AutoPlugin
         override val handlePrefixMap = autoImport.handlePrefixMap.value
       }
     },
-    update <<= update dependsOn Def.taskDyn {
+    update := (update dependsOn Def.taskDyn {
       if (autoUpdateVersions.value) updatePluginVersionsTask
       else Def.task()
-    },
+    }).value,
     updateAllPlugins := false,
     updatePluginsInclude := List(),
     updatePluginsExclude := List()

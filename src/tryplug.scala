@@ -98,9 +98,9 @@ trait Tryplug
   def pluginVersionDefaults = List(
     propVersion(sdkVersion, "sdk", "1.5.1"),
     propVersion(protifyVersion, "protify", "1.1.4"),
-    propVersion(trypVersion, "tryp", "28"),
-    propVersion(tryplugVersion, "tryplug", "40"),
-    propVersion(coursierVersion, "coursier", "1.0.0-M12")
+    propVersion(trypVersion, "tryp", "108"),
+    propVersion(tryplugVersion, "tryplug", "76"),
+    propVersion(coursierVersion, "coursier", "1.0.0-M14-9")
   )
 
   val homeDir = sys.env.get("HOME").map(d => new File(d))
@@ -114,7 +114,7 @@ trait Tryplug
   lazy val bintrayTekResolver = bintrayPluginResolver("tek")
 
   def propVersion(setting: SettingKey[String], name: String, alt: String) = {
-    setting <<= setting or Def.setting(sys.props.getOrElse(name, alt))
+    setting := setting.or(Def.setting(sys.props.getOrElse(name, alt))).value
   }
 
   def bintraySpec(user: String, repo: String, org: String, pkg: String,

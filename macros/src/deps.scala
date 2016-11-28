@@ -7,6 +7,9 @@ import sbt.Keys._
 
 import Types._
 
+// TODO local settingKey in TrypId that stores the dep and is converted to
+// libraryDependencies via .init.value
+
 class TrypId(val id: ModuleID, depspec: DepSpec, path: String,
   sub: List[String], dev: Boolean, hook: DepCond,
   cond: Option[SettingKey[Boolean]])

@@ -69,8 +69,9 @@ extends Build
     .settings(
       resolvers += Resolver.typesafeIvyRepo("releases"),
       sbtTestDirectory := baseDirectory.value / "test",
-      scriptedRun <<=
-        scriptedRun dependsOn(publishLocal in macros, publishLocal in tryplug),
+      scriptedRun := (
+        scriptedRun
+          .dependsOn(publishLocal in macros, publishLocal in tryplug)).value,
       scriptedBufferLog := false,
       scriptedLaunchOpts ++= Seq(
         "-Xmx2048m",

@@ -65,7 +65,7 @@ extends AutoPlugin
   def ptryp(plug: String, buildHelper: String) = s"""enablePlugins($plug)
 lazy val `project` = $buildHelper"""
 
-  val trypver = """trypVersion := "85""""
+  val trypver = """trypVersion := "109.0.0""""
 
   def pptryp(dep: String) = s"""resolvers += Resolver.url(
   "bintray-tek-sbt",

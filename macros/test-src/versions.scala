@@ -1,5 +1,7 @@
 package tryp
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import sbt.Logger
 
 import org.specs2._
@@ -9,7 +11,7 @@ extends Versions
 
 trait VersionSpec
 extends Specification
-with matcher.TaskMatchers
+with matcher.FutureMatchers
 {
   implicit lazy val l = Logger.Null
 
@@ -26,12 +28,12 @@ extends VersionSpec
 
   def go(current: String) = {
     val spec = MavenPluginSpec("org.ensime", "sbt-ensime", "v", current)
-    v.updateTask(spec).map(_.minor.toInt)
+    v.updateFuture(spec).map(_.minor.toInt)
   }
 
-  def high = go("10.0.0") must returnValue(-1)
+  def high = go("10.0.0") must be_==(-1).await
 
-  def low = go("0.1.0") must returnValue(be_>=(5))
+  def low = go("0.1.0") must be_>=(5).await
 }
 
 class BintraySpec
@@ -45,10 +47,10 @@ extends VersionSpec
   def go(current: String) = {
     val spec = BintrayPluginSpec("tek", "sbt-plugins", "tryp.sbt",
       "tryp-build", "v", current)
-    v.updateTask(spec).map(_.major.toInt)
+    v.updateFuture(spec).map(_.major.toInt)
   }
 
-  def high = go("1000") must returnValue(-1)
+  def high = go("1000") must be_==(-1).await
 
-  def low = go("1") must returnValue(be_>=(95))
+  def low = go("1") must be_>=(95).await
 }

@@ -5,6 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import sbt.Logger
 
 import org.specs2._
+import org.specs2.concurrent.ExecutionEnv
 
 class V(implicit val log: Logger)
 extends Versions
@@ -31,9 +32,13 @@ extends VersionSpec
     v.updateFuture(spec).map(_.minor.toInt)
   }
 
-  def high = go("10.0.0") must be_==(-1).await
+  def high = { implicit ee: ExecutionEnv =>
+    go("10.0.0") must be_==(-1).await
+  }
 
-  def low = go("0.1.0") must be_>=(5).await
+  def low = { implicit ee: ExecutionEnv =>
+    go("0.1.0") must be_>=(5).await
+  }
 }
 
 class BintraySpec
@@ -50,7 +55,11 @@ extends VersionSpec
     v.updateFuture(spec).map(_.major.toInt)
   }
 
-  def high = go("1000") must be_==(-1).await
+  def high = { implicit ee: ExecutionEnv =>
+    go("1000") must be_==(-1).await
+  }
 
-  def low = go("1") must be_>=(95).await
+  def low = { implicit ee: ExecutionEnv =>
+    go("1") must be_>=(95).await
+  }
 }

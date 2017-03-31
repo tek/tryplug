@@ -35,7 +35,6 @@ trait Tryplug
   def trypSettings = commonBasicSettings ++ List(
     organization := "tryp",
     scalaVersionSetting
-    // , addCompilerPlugin("fail.sauce" %% "commas" % "0.1.1-SNAPSHOT")
   )
 
   def trypPluginSettings = commonBasicSettings ++ List(

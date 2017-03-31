@@ -1,3 +1,6 @@
+import ReleaseTransformations._
+import sbtrelease.Version.Bump
+
 val common = List(
   organization := "tryp.sbt",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
@@ -22,7 +25,18 @@ val common = List(
     "-language:experimental.macros",
     "-language:existentials",
     "-language:higherKinds"
-  )
+  ),
+  releaseProcess := Seq[ReleaseStep](
+    inquireVersions,
+    setReleaseVersion,
+    commitReleaseVersion,
+    publishArtifacts,
+    tagRelease,
+    setNextVersion,
+    commitNextVersion
+  ),
+  releaseIgnoreUntrackedFiles := true,
+  releaseVersionBump := Bump.Major
 )
 
 lazy val tryplug = (project in file("."))

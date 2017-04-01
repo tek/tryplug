@@ -34,23 +34,13 @@ with Tryplug
   def userLevelName = "user-level"
 
   override def projectSettings = super.projectSettings ++ List(
-    name := userLevelName,
-    bintrayTekResolver,
     publishTo := None,
-    bintrayPluginResolver("pfn"),
     useCoursier := false
-  ) ++ trypPluginSettings ++ deps(userLevelName) ++
-    deps.pluginVersions(userLevelName)
+  ) ++ deps(userLevelName) ++ deps.pluginVersions(userLevelName)
 
   def userLevelDebugDeps = {
     Project(userLevelName, file("."))
       .settings(pluginVersionDefaults: _*)
-  }
-
-  override object deps
-  extends PluginDeps
-  {
-    override def deps = super.deps ++ Map(userLevelName -> ids(coursier))
   }
 }
 

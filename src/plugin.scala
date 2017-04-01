@@ -3,47 +3,6 @@ package tryp
 import sbt._
 import Keys._
 
-object GlobalKeysPlug
-extends AutoPlugin
-{
-  override def requires = plugins.JvmPlugin
-  override def trigger = allRequirements
-
-  object autoImport
-  {
-    def protifyVersion = TrypKeys.protifyVersion
-    def sdkVersion = TrypKeys.sdkVersion
-    def coursierVersion = TrypKeys.coursierVersion
-  }
-}
-
-import TrypKeys._
-
-object UserLevel
-extends AutoPlugin
-with Tryplug
-{
-  override def requires = PluginVersionUpdate
-
-  object autoImport
-  {
-    def debugDeps = userLevelDebugDeps
-    def useCoursier = TrypKeys.useCoursier
-  }
-
-  def userLevelName = "user-level"
-
-  override def projectSettings = super.projectSettings ++ List(
-    publishTo := None,
-    useCoursier := false
-  ) ++ deps(userLevelName) ++ deps.pluginVersions(userLevelName)
-
-  def userLevelDebugDeps = {
-    Project(userLevelName, file("."))
-      .settings(pluginVersionDefaults: _*)
-  }
-}
-
 object TrypGen
 extends AutoPlugin
 {

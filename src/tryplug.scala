@@ -91,7 +91,7 @@ trait Tryplug
     pluginProject(projectBuildName)
   }
 
-  val scalaVersionSetting = scalaVersion := "2.11.8"
+  val scalaVersionSetting = scalaVersion := "2.11.11"
 
   def pluginVersionDefaults = List(
     propVersion(sdkVersion, "sdk", "1.5.1"),

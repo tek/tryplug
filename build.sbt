@@ -53,9 +53,9 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "tryplug-macros",
     libraryDependencies ++= List(
-      "io.circe" %% "circe-core" % "0.+",
-      "io.circe" %% "circe-parser" % "0.+",
-      "io.circe" %% "circe-generic" % "0.+",
+      "io.circe" %% "circe-core" % "0.7.0",
+      "io.circe" %% "circe-parser" % "0.7.0",
+      "io.circe" %% "circe-generic" % "0.7.0",
       "me.lessis" %% "semverfi" % "0.+",
       "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
       "org.specs2" %% "specs2-core" % "3.8.9" % "test",

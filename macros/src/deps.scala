@@ -211,8 +211,7 @@ trait Deps
   // `libraryDependencies += id` for each dep
   // if env is development, devdeps return empty settings
   def apply(name: String): Setts = {
-    List(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++
-      resolveDeps(name).map(_.dep)
+    List(Keys.resolvers ++= defaultResolvers ++ this.resolvers.fetch(name)) ++ resolveDeps(name).map(_.dep)
   }
 
   // ProjectRef instances for each devdep's subprojects

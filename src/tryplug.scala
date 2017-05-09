@@ -121,8 +121,7 @@ trait Tryplug
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 
-  def nexusPattern = "[organisation]/[module]/[revision]/" +
-    "[artifact]-[revision](-[timestamp]).[ext]"
+  def nexusPattern = "[organisation]/[module]/[revision]/[artifact]-[revision](-[timestamp]).[ext]"
 
   def projectUpdater(user: String, repo: String, org: String, id: String,
     version: SettingKey[String], prefix: String = "") = Def.task {

@@ -33,8 +33,7 @@ trait Tryplug
   ) ++ compilerSettings
 
   def trypSettings = commonBasicSettings ++ List(
-    organization := "tryp",
-    scalaVersionSetting
+    organization := "tryp"
   )
 
   def trypPluginSettings = commonBasicSettings ++ List(
@@ -90,8 +89,6 @@ trait Tryplug
   def projectBuild = {
     pluginProject(projectBuildName)
   }
-
-  val scalaVersionSetting = scalaVersion := "2.11.11"
 
   def pluginVersionDefaults = List(
     propVersion(sdkVersion, "sdk", "1.5.1"),

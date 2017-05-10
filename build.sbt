@@ -43,7 +43,7 @@ lazy val tryplug = (project in file("."))
   .settings(common: _*)
   .settings(
     name := "tryplug",
-    addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
+    addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.4.0")
   )
   .aggregate(macros)
   .dependsOn(macros)
@@ -53,10 +53,9 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "tryplug-macros",
     libraryDependencies ++= List(
-      "io.circe" %% "circe-core" % "0.7.0",
-      "io.circe" %% "circe-parser" % "0.7.0",
-      "io.circe" %% "circe-generic" % "0.7.0",
-      "me.lessis" %% "semverfi" % "0.+",
+      "io.circe" %% "circe-core" % "0.8.0",
+      "io.circe" %% "circe-parser" % "0.8.0",
+      "io.circe" %% "circe-generic" % "0.8.0",
       "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
       "org.specs2" %% "specs2-core" % "3.8.9" % "test",
       "org.specs2" %% "specs2-matcher-extra" % "3.8.9" % "test"

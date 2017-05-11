@@ -32,11 +32,11 @@ trait Tryplug
     updateOptions := updateOptions.value.withCachedResolution(true)
   ) ++ compilerSettings
 
-  def trypSettings = commonBasicSettings ++ List(
+  def trypSettings = compilerSettings ++ List(
     organization := "tryp"
   )
 
-  def trypPluginSettings = commonBasicSettings ++ List(
+  def trypPluginSettings = compilerSettings ++ List(
     organization := "tryp.sbt",
     sbtPlugin := true,
     scalaSource in Compile := baseDirectory.value / "src",

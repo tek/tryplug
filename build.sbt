@@ -61,11 +61,7 @@ lazy val macros = (project in file("macros"))
       "org.specs2" %% "specs2-core" % "3.8.9" % "test",
       "org.specs2" %% "specs2-matcher-extra" % "3.8.9" % "test"
     ),
-    // addCompilerPlugin(
-    //   "org.spire-math" % "kind-projector" % "0.9.0" cross CrossVersion.binary
-    // ),
-    addCompilerPlugin(
-      "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.patch)
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.+" cross CrossVersion.patch)
     )
 
 lazy val scripted = (project in file("scripted"))
@@ -73,9 +69,7 @@ lazy val scripted = (project in file("scripted"))
   .settings(
     resolvers += Resolver.typesafeIvyRepo("releases"),
     sbtTestDirectory := baseDirectory.value / "test",
-    scriptedRun := (
-      scriptedRun
-        .dependsOn(publishLocal in macros, publishLocal in tryplug)).value,
+    scriptedRun := scriptedRun.dependsOn(publishLocal in macros, publishLocal in tryplug).value,
     scriptedBufferLog := false,
     scriptedLaunchOpts ++= Seq(
       "-Xmx2048m",

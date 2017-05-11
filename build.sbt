@@ -56,13 +56,14 @@ lazy val macros = (project in file("macros"))
       "io.circe" %% "circe-core" % "0.8.0",
       "io.circe" %% "circe-parser" % "0.8.0",
       "io.circe" %% "circe-generic" % "0.8.0",
+      "me.lessis" %% "semverfi" % "0.+",
       "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
       "org.specs2" %% "specs2-core" % "3.8.9" % "test",
       "org.specs2" %% "specs2-matcher-extra" % "3.8.9" % "test"
     ),
-    addCompilerPlugin(
-      "org.spire-math" % "kind-projector" % "0.9.0" cross CrossVersion.binary
-    ),
+    // addCompilerPlugin(
+    //   "org.spire-math" % "kind-projector" % "0.9.0" cross CrossVersion.binary
+    // ),
     addCompilerPlugin(
       "org.scalamacros" % "paradise" % "2.+" cross CrossVersion.patch)
     )

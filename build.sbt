@@ -2,7 +2,7 @@ import ReleaseTransformations._
 import sbtrelease.Version.Bump
 
 val common = List(
-  organization := "tryp.sbt",
+  organization := "tryp",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalaSource in Compile := baseDirectory.value / "src",
   scalaSource in Test := baseDirectory.value / "test-src",

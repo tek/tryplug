@@ -233,40 +233,23 @@ extends Deps
 {
   import TrypKeys._
 
-  def androidName = "android"
   def trypOrg = "tryp.sbt"
-  val huy = "org.scala-android"
-  val sdkName = "sbt-android"
-  val protifyName = "sbt-android-protify"
-
-  def androidSdk =
-    plugin(huy, sdkName, sdkVersion, s"scala-android/$sdkName")
-      .bintray("pfn")
-
-  def protify =
-    plugin(huy, s"$protifyName", protifyVersion,
-      s"scala-android/$protifyName")
-        .bintray("pfn")
 
   def trypBuild =
-    plugin(trypOrg, s"tryp-build", trypVersion, "tek/sbt-tryp",
-      List("core"))
-        .bintray("tek")
+    plugin(trypOrg, s"tryp-build", trypVersion, "tek/sbt-tryp", List("core"))
+      .bintray("tek")
 
   def tryp =
-    plugin(trypOrg, s"tryp-$androidName", trypVersion, "tek/sbt-tryp",
-      List(androidName))
-        .bintray("tek")
+    plugin(trypOrg, s"tryp-android", trypVersion, "tek/sbt-tryp", List("android"))
+      .bintray("tek")
 
   def tryplug =
-    plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug",
-      List("tryplug", "macros"))
-        .bintray("tek")
+    plugin(trypOrg, "tryplug", tryplugVersion, "tek/tryplug", List("tryplug", "macros"))
+      .bintray("tek")
 
   def coursier =
-    plugin("io.get-coursier", "sbt-coursier", coursierVersion,
-      "alexarchambault/coursier", cond = Some(useCoursier))
-        .maven
+    plugin("io.get-coursier", "sbt-coursier", coursierVersion, "alexarchambault/coursier", cond = Some(useCoursier))
+      .maven
 }
 
 object NoDeps

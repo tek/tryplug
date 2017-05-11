@@ -91,8 +91,6 @@ trait Tryplug
   }
 
   def pluginVersionDefaults = List(
-    propVersion(sdkVersion, "sdk", "1.5.1"),
-    propVersion(protifyVersion, "protify", "1.1.4"),
     propVersion(trypVersion, "tryp", "108"),
     propVersion(tryplugVersion, "tryplug", "76"),
     propVersion(coursierVersion, "coursier", "1.0.0-M14-9")

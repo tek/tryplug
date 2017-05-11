@@ -8,8 +8,6 @@ object TrypKeys
   val Tryp = config("tryp")
   val trypVersion = settingKey[String]("tryp-build version") in Tryp
   val tryplugVersion = settingKey[String]("tryplug version") in Tryp
-  val sdkVersion = settingKey[String]("android-sdk-plugin version") in Tryp
-  val protifyVersion = settingKey[String]("protify version") in Tryp
   val coursierVersion = settingKey[String]("coursier version") in Tryp
   val useCoursier = settingKey[Boolean]("activate coursier in this project") in Tryp
 }

@@ -13,8 +13,7 @@ val common = List(
   bintrayOrganization in bintray := None,
   resolvers ++= List(
     Resolver.sonatypeRepo("snapshots"),
-    Resolver.sonatypeRepo("releases"),
-    Resolver.bintrayRepo("scalaz", "releases")
+    Resolver.sonatypeRepo("releases")
   ),
   scalacOptions ++= List(
     "-feature",

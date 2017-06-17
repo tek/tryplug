@@ -202,7 +202,6 @@ trait Deps
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
       Resolver.sonatypeRepo("staging"),
-      Resolver.bintrayRepo("scalaz", "releases"),
       Resolver.jcenterRepo
     )
 

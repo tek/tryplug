@@ -12,8 +12,8 @@ trait Tryplug
 {
   import TrypKeys._
 
-  def plugin(org: String, name: String, version: SettingKey[String]) =
-    PluginTrypId.pluginDep(org, name, version)
+  // def plugin(org: String, name: String, version: SettingKey[String]) =
+  //   PluginTrypId.pluginDep(org, name, version)
 
   def compilerSettings = List(
     scalacOptions ++= List(
@@ -37,7 +37,7 @@ trait Tryplug
   )
 
   def trypPluginSettings = compilerSettings ++ List(
-    organization := "tryp.sbt",
+    organization := "io.tryp",
     sbtPlugin := true,
     scalaSource in Compile := baseDirectory.value / "src",
     licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
@@ -48,25 +48,31 @@ trait Tryplug
     publishArtifact in (Compile, packageSrc) := false
   )
 
+  def libDeps(name: String) =
+    Def.settingDyn(sequenceSettings(deps.value(name)))
+
+  def pluginDeps(name: String) =
+    Def.settingDyn(sequenceSettings(deps.value.plugins(name)))
+
   def pluginSubProject(name: String) = {
     Project(name, file(name))
+      .settings(deps := NoLibs)
       .settings(trypPluginSettings: _*)
-      .settings(deps(name): _*)
-      .settings(deps.pluginVersions(name): _*)
+      .settings(libraryDependencies ++= libDeps(name).value)
+      .settings(libraryDependencies ++= pluginDeps(name).value)
+      // .settings(deps.pluginVersions(name): _*)
       .settings(
         bintrayTekResolver,
         VersionUpdateKeys.autoUpdateVersions := true
       )
-      .dependsOn(deps.refs(name): _*)
+      // .dependsOn(deps.refs(name): _*)
   }
-
-  def deps: Deps = NoDeps
 
   def pluginRoot(name: String) = {
     pluginSubProject(name).in(file("."))
       .settings(
-        publish := (),
-        publishLocal := ()
+        publish := (()),
+        publishLocal := (())
       )
   }
 
@@ -93,7 +99,6 @@ trait Tryplug
   def pluginVersionDefaults = List(
     propVersion(trypVersion, "tryp", "108"),
     propVersion(tryplugVersion, "tryplug", "76"),
-    propVersion(coursierVersion, "coursier", "1.0.0-M14-9")
   )
 
   val homeDir = sys.env.get("HOME").map(d => new File(d))
@@ -110,22 +115,29 @@ trait Tryplug
     setting := setting.or(Def.setting(sys.props.getOrElse(name, alt))).value
   }
 
-  def bintraySpec(user: String, repo: String, org: String, pkg: String,
-    version: SettingKey[String]) =
-      macro Pspec.bintray
+  // def bintraySpec(user: String, repo: String, org: String, pkg: String, version: SettingKey[String]): PluginMeta =
+  //     macro Pspec.bintray
 
   def nexusUri(host: String) = s"https://$host/nexus/content/repositories"
 
   def nexusPattern = "[organisation]/[module]/[revision]/[artifact]-[revision](-[timestamp]).[ext]"
 
-  def projectUpdater(user: String, repo: String, org: String, id: String,
-    version: SettingKey[String], prefix: String = "") = Def.task {
-      val updater = new Versions {
-        val log = streams.value.log
-        override def projectDir = Some(baseDirectory.value / "project")
-        override def defaultHandlePrefix = prefix
-      }
-      updater.update(
-        bintraySpec(user, repo, org, id, version))
-  }
+  // def projectUpdater(user: String, repo: String, org: String, id: String,
+  //   version: SettingKey[String], prefix: String = "") = Def.task {
+  //     val updater = new Versions {
+  //       val log = streams.value.log
+  //       override def projectDir = Some(baseDirectory.value / "project")
+  //       override def defaultHandlePrefix = prefix
+  //     }
+  //     updater.update(
+  //       bintraySpec(user, repo, org, id, version))
+  // }
+}
+
+object Tryplug
+extends AutoPlugin
+{
+  object autoImport
+  extends Tryplug
+  with Types
 }

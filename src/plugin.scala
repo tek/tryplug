@@ -21,7 +21,7 @@ lazy val `project` = $buildHelper"""
   url("https://dl.bintray.com/tek/sbt-plugins")
 )(Resolver.ivyStylePatterns)
 libraryDependencies += Defaults.sbtPluginExtra(
-  "tryp.sbt" % "tryp-$dep" % trypVersion.value,
+  "io.tryp" % "tryp-$dep" % trypVersion.value,
   (sbtBinaryVersion in update).value,
   (scalaBinaryVersion in update).value
 )
@@ -47,8 +47,7 @@ extends $base("$name")
 }
 """
 
-  def genCommand(cmd: String, dep: String, base: String, plug: String,
-    buildHelper: String) =
+  def genCommand(cmd: String, dep: String, base: String, plug: String, buildHelper: String) =
     Command.command(s"gen-$cmd") { state =>
       val extracted = sbt.Project.extract(state)
       import extracted._
@@ -57,9 +56,9 @@ extends $base("$name")
       val ppp = pp / "project"
       IO.createDirectory(pp)
       IO.write(pro / "trypVersion.sbt", trypver)
-      IO.write(pro / "tryp.sbt", ptryp(plug, buildHelper))
+      IO.write(pro / "io.tryp", ptryp(plug, buildHelper))
       IO.write(pp / "trypVersion.sbt", trypver)
-      IO.write(pp / "tryp.sbt", pptryp(dep))
+      IO.write(pp / "io.tryp", pptryp(dep))
       IO.write(ppp / "build.scala", pppbuild)
       IO.write(pro / "build.scala", build(base, get(name)))
       state

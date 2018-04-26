@@ -2,7 +2,7 @@ import ReleaseTransformations._
 import sbtrelease.Version.Bump
 
 val common = List(
-  organization := "tryp.sbt",
+  organization := "io.tryp",
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   scalaSource in Compile := baseDirectory.value / "src",
   scalaSource in Test := baseDirectory.value / "test-src",
@@ -23,7 +23,8 @@ val common = List(
     "-language:reflectiveCalls",
     "-language:experimental.macros",
     "-language:existentials",
-    "-language:higherKinds"
+    "-language:higherKinds",
+    "-Ypartial-unification"
   ),
   releaseProcess := Seq[ReleaseStep](
     inquireVersions,
@@ -38,11 +39,13 @@ val common = List(
   releaseVersionBump := Bump.Major
 )
 
+val circeVersion = "0.9.3"
+
 lazy val tryplug = (project in file("."))
   .settings(common: _*)
   .settings(
     name := "tryplug",
-    addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
+    addSbtPlugin("org.foundweekends" %% "sbt-bintray" % "0.5.1")
   )
   .aggregate(macros)
   .dependsOn(macros)
@@ -52,19 +55,17 @@ lazy val macros = (project in file("macros"))
   .settings(
     name := "tryplug-macros",
     libraryDependencies ++= List(
-      "io.circe" %% "circe-core" % "0.8.0",
-      "io.circe" %% "circe-parser" % "0.8.0",
-      "io.circe" %% "circe-generic" % "0.8.0",
-      "me.lessis" %% "semverfi" % "0.+",
-      "org.scalamacros" % "quasiquotes" % "2.+" cross CrossVersion.binary,
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "com.lihaoyi" %% "fastparse" % "0.4.4",
       "org.specs2" %% "specs2-core" % "3.8.9" % "test",
-      "org.specs2" %% "specs2-matcher-extra" % "3.8.9" % "test"
+      "org.specs2" %% "specs2-matcher-extra" % "3.8.9" % "test",
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.+" cross CrossVersion.patch)
-    )
+  )
 
 lazy val scripted = (project in file("scripted"))
-  .settings(scriptedSettings: _*)
   .settings(
     resolvers += Resolver.typesafeIvyRepo("releases"),
     sbtTestDirectory := baseDirectory.value / "test",

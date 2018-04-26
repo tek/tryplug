@@ -2,13 +2,17 @@ package tryp
 
 import sbt._
 
-object Types
+trait Types
 {
   type DepSpec = Setting[Seq[ModuleID]]
   type Setts = List[Setting[_]]
   type SbtDep = ClasspathDep[ProjectReference]
   type DepCond = DepSpec => DepSpec
 }
+
+object Types
+extends Types
+
 import Types._
 
 object Env
@@ -31,7 +35,7 @@ object Env
   lazy val projectBase = new File(projectBasePath)
 
   def cloneRepo(path: String, dirname: String) = {
-    s"git clone https://github.com/$path ${Env.projectBase}/$dirname".!
+    // s"git clone https://github.com/$path ${Env.projectBase}/$dirname".!
   }
 
   def localProject(path: String) = {

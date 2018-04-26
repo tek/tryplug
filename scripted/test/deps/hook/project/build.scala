@@ -6,51 +6,25 @@ import sbt.Keys._
 import Types._
 
 object B
-extends Build
+extends AutoPlugin
 with Tryplug
+
+object Local
+extends AutoPlugin
 {
-  val v = settingKey[String]("version")
-  val useCondPos = settingKey[Boolean]("condPos")
-  val useCondNeg = settingKey[Boolean]("condNeg")
-
-  def testDep: Def.Initialize[Task[Unit]] = Def.task {
-    val org = (libraryDependencies in core).value
-    val has = (name: String) => org.exists(_.name == name)
-    if (has("neg") || !has("pos") || has("condNeg") || !has("condPos"))
-      error("Conditional dependencies failed")
-    ()
-  }
-
-  lazy val core = pluginSubProject("core")
-    .settings(
-      v := "1.0.0",
-      useCondPos := true,
-      useCondNeg := false
-    )
-
-  lazy val root = pluginRoot("root")
-    .settings(
-      TaskKey[Unit]("testDep") := testDep.value
-    )
-
-  def positive(d: DepSpec): DepSpec = {
-    libraryDependencies ++= d.init.value
-  }
-
-  def negative(d: DepSpec): DepSpec = {
-    libraryDependencies ++= List()
-  }
-
-  override object deps
-  extends PluginDeps
+  object autoImport
   {
-    val pos = plugin("org", "pos", v, "org/pos", hook = positive _)
-    val neg = plugin("org", "neg", v, "org/neg", hook = negative _)
-    val condPos = plugin("org", "condPos", v, "org/cond-pos",
-      cond = Some(useCondPos))
-    val condNeg = plugin("org", "condNeg", v, "org/cond-neg",
-      cond = Some(useCondNeg))
-
-    lazy val core = ids(pos, neg, condPos, condNeg)
+    val ensimeVersion = settingKey[String]("ensime version")
+    val releaseVersion = settingKey[String]("release version")
   }
+}
+import Local.autoImport._
+
+object PluginDeps
+extends Libs
+{
+  val ensime = plugin("org.ensime", "sbt-ensime", ensimeVersion, MavenSource)
+  val release = plugin("com.github.gseitz", "sbt-release", releaseVersion, BintraySource("sbt", "sbt-plugin-releases"))
+  val corePlugins = List(release, ensime)
+  val rootPlugins = List(ensime)
 }
